@@ -1,8 +1,16 @@
 import bluepy.btle
-import pprint
+import json
+
+class CustomJSONEncoder(json.JSONEncoder):
+	def default(self, obj):
+		if isinstance(obj, bluepy.btle.UUID):
+			return str(obj)
+		return json.JSONencoder.default(self.obj)
 
 # Path for saving results
-output_path = 'scan_results.txt'
+output_path_stem = 'scan_results'
+text_output_path = output_path_stem + '.txt'
+json_output_path = output_path_stem + '.json'
 
 # BLE advertising data type codes
 SHORT_LOCAL_NAME_AD_CODE = 8
@@ -84,7 +92,6 @@ for decawave_scan_entry in decawave_scan_entries:
 		characteristics_information = []
 		for characteristic in characteristics:
 			characteristic_uuid = characteristic.uuid
-			print('\tCharacteristic UUID: {}'.format(characteristic_uuid))
 			characteristics_information.append({
 				'characteristic_uuid': characteristic_uuid})
 		services_information.append({
@@ -100,9 +107,14 @@ for decawave_scan_entry in decawave_scan_entries:
 		'scan_data': scan_data_information,
 		'services': services_information})
 
-# Write results to file
-print('Saving results in {}'.format(output_path))
-with open(output_path, 'w') as file:
+# Write results to JSON file (currently disabled because some objects are not serializable
+print('Saving results in {}'.format(json_output_path))
+with open(json_output_path, 'w') as file:
+	json.dump(decawave_devices, file, cls=CustomJSONEncoder)
+
+# Write results to text file
+print('Saving results in {}'.format(text_output_path))
+with open(text_output_path, 'w') as file:
 	file.write('{} Decawave devices found:\n'.format(num_decawave_devices))
 	for decawave_device in decawave_devices:
 		file.write('\nDevice MAC address: {}\n'.format(decawave_device['mac_address']))
