@@ -3,13 +3,14 @@ import json
 import collections
 import bitstruct
 
+# Extend the default JSON encoder so it can handle bluepy.btle.UUID objects
 class CustomJSONEncoder(json.JSONEncoder):
 	def default(self, obj):
 		if isinstance(obj, bluepy.btle.UUID):
 			return str(obj)
 		return json.JSONencoder.default(self.obj)
 
-# Path for saving results
+# Paths for saving results
 output_path_stem = 'scan_results'
 text_output_path = output_path_stem + '.txt'
 json_output_path = output_path_stem + '.json'
@@ -73,21 +74,19 @@ def is_decawave_scan_entry(scan_entry):
 	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_AD_CODE)
 	return (short_local_name is not None and short_local_name.startswith('DW'))
 
-# Create scanner object
-scanner = bluepy.btle.Scanner()
-
 # Scan for BLE devices
-print('Scanning for BLE devices.')
+print('Scanning for BLE devices')
+scanner = bluepy.btle.Scanner()
 scan_entries = scanner.scan()
-print('Finished scanning for BLE devices.')
+print('Finished scanning for BLE devices')
 
 # Filter for Decawave devices
 decawave_scan_entries = list(filter(is_decawave_scan_entry, scan_entries))
 num_decawave_devices = len(decawave_scan_entries)
-print('Found {} Decawave devices.'.format(num_decawave_devices))
+print('\nFound {} Decawave devices'.format(num_decawave_devices))
 
-# Get services and characteristics for Decawave devices
-print('Getting services and characteristics for Decawave devices.')
+# Get data from Decawave devices
+print('\nGetting data from Decawave devices')
 decawave_devices = []
 for decawave_scan_entry in decawave_scan_entries:
 	mac_address = decawave_scan_entry.addr
@@ -95,7 +94,9 @@ for decawave_scan_entry in decawave_scan_entries:
 	iface = decawave_scan_entry.iface
 	rssi = decawave_scan_entry.rssi
 	connectable = decawave_scan_entry.connectable
-	print('\nGetting scan data for Decawave device {}'.format(mac_address))
+	print('\nGetting data for Decawave device {}'.format(mac_address))
+	# Get advertising data
+	print('Getting advertising data')
 	scan_data = decawave_scan_entry.getScanData()
 	scan_data_information = []
 	for scan_data_tuple in scan_data:
@@ -108,15 +109,18 @@ for decawave_scan_entry in decawave_scan_entries:
 			'type_code': type_code,
 			'description': description,
 			'value': value})
+	# Connect to device
+	print('Connecting to device')
 	peripheral = bluepy.btle.Peripheral()
-	print('Connecting to Decawave device {}'.format(mac_address))
 	peripheral.connect(mac_address)
-	print('Getting services for Decawave device {}'.format(mac_address))
+	# Get services list
+	print('Getting services list')
 	services = list(peripheral.getServices())
 	services_information = []
 	for service in services:
 		service_uuid = service.uuid
-		print('Getting characteristics for service UUID: {}'.format(service_uuid))
+		# Get characteristics list
+		print('Getting characteristics list for service {}'.format(service_uuid))
 		characteristics = service.getCharacteristics()
 		characteristics_information = []
 		for characteristic in characteristics:
@@ -126,8 +130,10 @@ for decawave_scan_entry in decawave_scan_entries:
 		services_information.append({
 			'service_uuid': service_uuid,
 			'characteristics': characteristics_information})
+	# Get network node service
 	print('Getting network node service')
 	network_node_service = peripheral.getServiceByUUID(NETWORK_NODE_SERVICE_UUID)
+	# Get operation mode data
 	print('Getting operation mode data')
 	operation_mode_characteristic = network_node_service.getCharacteristics(OPERATION_MODE_CHARACTERISTIC_UUID)[0]
 	operation_mode_bytes = operation_mode_characteristic.read()
@@ -135,7 +141,9 @@ for decawave_scan_entry in decawave_scan_entries:
 		*bitstruct.unpack(
 			OPERATION_MODE_FORMAT_STRING,
 			operation_mode_bytes))
+	# Disconnect from device
 	peripheral.disconnect()
+	# Populate device data
 	decawave_devices.append({
 		'mac_address': mac_address,
 		'device_name': device_name,
