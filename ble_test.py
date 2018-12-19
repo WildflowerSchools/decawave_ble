@@ -166,7 +166,7 @@ with open(text_output_path, 'w') as file:
 	file.write('{} Decawave devices found:\n'.format(num_decawave_devices))
 	for decawave_device in decawave_devices:
 		file.write('\nDevice MAC address: {}\n'.format(decawave_device['mac_address']))
-		file.write('\nDevice name: {}\n'.format(decawave_device['device_name']))
+		file.write('Device name: {}\n'.format(decawave_device['device_name']))
 		file.write('Address type: {}\n'.format(decawave_device['addrType']))
 		file.write('Interface number: {}\n'.format(decawave_device['iface']))
 		file.write('RSSI (dB): {}\n'.format(decawave_device['rssi']))
@@ -182,9 +182,10 @@ with open(text_output_path, 'w') as file:
 		file.write('Location engine enabled: {}\n'.format(decawave_device['location_engine']))
 		file.write('Advertising data:\n')
 		for scan_data_item in decawave_device['scan_data']:
-			file.write('  Type code: {}\n'.format(scan_data_item['type_code']))
-			file.write('    Desc: {}\n'.format(scan_data_item['description']))
-			file.write('    Value: {}\n'.format(scan_data_item['value']))
+			file.write('  {} ({}): {}\n'.format(
+				scan_data_item['description'],
+				scan_data_item['type_code'],
+				scan_data_item['value']))
 		file.write('Services:\n')
 		for service in decawave_device['services']:
 			file.write('  UUID: {}\n'.format(service['service_uuid']))
