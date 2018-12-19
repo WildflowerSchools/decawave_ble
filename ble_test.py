@@ -1,4 +1,5 @@
 import bluepy.btle
+import pprint
 
 # Path for saving results
 output_path = 'scan_results.txt'
@@ -51,35 +52,67 @@ num_decawave_devices = len(decawave_scan_entries)
 print('Found {} Decawave devices.'.format(num_decawave_devices))
 
 # Get services and characteristics for Decawave devices
-print('Getting services for Decawave devices.')
+print('Getting services and characteristics for Decawave devices.')
+decawave_devices = []
 for decawave_scan_entry in decawave_scan_entries:
 	mac_address = decawave_scan_entry.addr
+	addrType = decawave_scan_entry.addrType
+	iface = decawave_scan_entry.iface
+	rssi = decawave_scan_entry.rssi
+	connectable = decawave_scan_entry.connectable
+	print('Getting scan data for Decawave device {}'.format(mac_address))
+	scan_data = decawave_scan_entry.getScanData()
+	scan_data_information = []
+	for scan_data_tuple in scan_data:
+		type_code = scan_data_tuple[0]
+		description = scan_data_tuple[1]
+		value = scan_data_tuple[2]
+		scan_data_information.append({
+			'type_code': type_code,
+			'description': description,
+			'value': value})
 	peripheral = bluepy.btle.Peripheral()
 	print('\nConnecting to Decawave device {}'.format(mac_address))
 	peripheral.connect(mac_address)
 	print('Getting services for Decawave device {}'.format(mac_address))
 	services = list(peripheral.getServices())
+	services_information = []
 	for service in services:
 		service_uuid = service.uuid
 		print('Getting characteristics for service UUID: {}'.format(service_uuid))
 		characteristics = service.getCharacteristics()
+		characteristics_information = []
 		for characteristic in characteristics:
-			print('\tCharacteristic UUID: {}'.format(characteristic.uuid))
+			characteristic_uuid = characteristic.uuid
+			print('\tCharacteristic UUID: {}'.format(characteristic_uuid))
+			characteristics_information.append({
+				'characteristic_uuid': characteristic_uuid})
+		services_information.append({
+			'service_uuid': service_uuid,
+			'characteristics': characteristics_information})
 	peripheral.disconnect()
+	decawave_devices.append({
+		'mac_address': mac_address,
+		'addrType': addrType,
+		'iface': iface,
+		'rssi': rssi,
+		'connectable': connectable,
+		'scan_data': scan_data_information,
+		'services': services_information})
 
 # Write results to file
 print('Saving results in {}'.format(output_path))
 with open(output_path, 'w') as file:
 	file.write('\nDecawave devices found:\n')
-	for scan_entry in decawave_scan_entries:
-		file.write('\nDevice MAC address: {}\n'.format(scan_entry.addr))
-		file.write('Address type: {}\n'.format(scan_entry.addrType))
-		file.write('Interface number: {}\n'.format(scan_entry.iface))
-		file.write('RSSI (dB): {}\n'.format(scan_entry.rssi))
-		file.write('Connectable: {}\n'.format(scan_entry.connectable))
-		scan_data = scan_entry.getScanData()
-		for scan_data_tuple in scan_data:
+	for decawave_device in decawave_devices:
+		print(decawave_device.keys())
+		file.write('\nDevice MAC address: {}\n'.format(decawave_device['mac_address']))
+		file.write('Address type: {}\n'.format(decawave_device['addrType']))
+		file.write('Interface number: {}\n'.format(decawave_device['iface']))
+		file.write('RSSI (dB): {}\n'.format(decawave_device['rssi']))
+		file.write('Connectable: {}\n'.format(decawave_device['connectable']))
+		for scan_data_item in decawave_device['scan_data']:
 			file.write('\n\tType code: {}\n\tDesc: {}\n\tValue: {}\n '.format(
-				scan_data_tuple[0],
-				scan_data_tuple[1],
-				scan_data_tuple[2]))
+				scan_data_item['type_code'],
+				scan_data_item['description'],
+				scan_data_item['value']))
