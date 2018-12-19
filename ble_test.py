@@ -51,9 +51,10 @@ ANCHOR_MAC_STATS_CHARACTERISTIC_UUID = '28d01d60-89de-4bfa-b6e9-651ba596232c'
 ANCHOR_LIST_CHARACTERISTIC_UUID = '5b10c428-af2f-486f-aee1-9dbd79b6bccb'
 TAG_UPDATE_RATE_CHARACTERISTIC_UUID = '7bd47f30-5602-4389-b069-8305731308b6'
 
-# Format strings (in bitstruct format) and field names for network
-# node service characteristics (from documentation)
+# Format strings, field names, and data value names for network node service
+# characteristics (from documentation)
 
+# Operation mode characteristic
 OPERATION_MODE_FORMAT_STRING = 'u1u2u1b1b1b1b1b1b1b1u4'
 OPERATION_MODE_FIELD_NAMES = [
 	'device_type',
@@ -70,11 +71,21 @@ OPERATION_MODE_FIELD_NAMES = [
 OperationModeData = collections.namedtuple(
 	'OperationModeData',
 	OPERATION_MODE_FIELD_NAMES)
-
-# Mappings from integer data values to names
 DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
 UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
 FW_VERSION_NAMES = ['1', '2']
+
+# Location data mode characteristic
+LOCATION_DATA_MODE_FORMAT_STRING = 'u8'
+LOCATION_DATA_MODE_FIELD_NAMES = [
+	'location_data_mode']
+LocationDataModeData = collections.namedtuple(
+	'LocationDataModeData',
+	LOCATION_DATA_MODE_FIELD_NAMES)
+LOCATION_DATA_MODE_NAMES = [
+	'Position',
+	'Distances',
+	'Position and distances']
 
 # Function for identifying Decawave devices
 def is_decawave_scan_entry(scan_entry):
@@ -146,6 +157,14 @@ for decawave_scan_entry in decawave_scan_entries:
 		*bitstruct.unpack(
 			OPERATION_MODE_FORMAT_STRING,
 			operation_mode_bytes))
+	# Get location data mode data
+	print('Getting location data mode data')
+	location_data_mode_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_MODE_CHARACTERISTIC_UUID)[0]
+	location_data_mode_bytes = location_data_mode_characteristic.read()
+	location_data_mode_data = LocationDataModeData(
+		*bitstruct.unpack(
+			LOCATION_DATA_MODE_FORMAT_STRING,
+			location_data_mode_bytes))
 	# Disconnect from device
 	peripheral.disconnect()
 	# Populate device data
@@ -165,6 +184,7 @@ for decawave_scan_entry in decawave_scan_entries:
 		'initiator': operation_mode_data.initiator,
 		'low_power_mode': operation_mode_data.low_power_mode,
 		'location_engine': operation_mode_data.location_engine,
+		'location_data_mode': location_data_mode_data.location_data_mode,
 		'scan_data': scan_data_information,
 		'services': services_information})
 
@@ -193,6 +213,7 @@ with open(text_output_path, 'w') as file:
 		file.write('LED enabled: {}\n'.format(decawave_device['led_enable']))
 		file.write('Low power mode: {}\n'.format(decawave_device['low_power_mode']))
 		file.write('Location engine enabled: {}\n'.format(decawave_device['location_engine']))
+		file.write('Location data mode: {}\n'.format(LOCATION_DATA_MODE_NAMES[decawave_device['location_data_mode']]))
 		file.write('Advertising data:\n')
 		for scan_data_item in decawave_device['scan_data']:
 			file.write('  {} ({}): {}\n'.format(
