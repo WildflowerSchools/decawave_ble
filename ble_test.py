@@ -15,8 +15,17 @@ output_path_stem = 'scan_results'
 text_output_path = output_path_stem + '.txt'
 json_output_path = output_path_stem + '.json'
 
+# Structure for BLE advertising data tuple
+ADVERTISING_DATA_FIELD_NAMES = [
+	'type_code',
+	'description',
+	'value']
+AdvertisingData = collections.namedtuple(
+	'AdvertisingData',
+	ADVERTISING_DATA_FIELD_NAMES)
+
 # BLE advertising data type codes
-SHORT_LOCAL_NAME_AD_CODE = 8
+SHORT_LOCAL_NAME_TYPE_CODE = 8
 
 # Known Decawave services (from documentation)
 NETWORK_NODE_SERVICE_UUID = '680c21d9-c946-4c1f-9c11-baa1c21329e7'
@@ -71,7 +80,7 @@ FW_VERSION_NAMES = ['1', '2']
 
 # Function for identifying Decawave devices
 def is_decawave_scan_entry(scan_entry):
-	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_AD_CODE)
+	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
 	return (short_local_name is not None and short_local_name.startswith('DW'))
 
 # Scan for BLE devices
@@ -100,15 +109,13 @@ for decawave_scan_entry in decawave_scan_entries:
 	scan_data = decawave_scan_entry.getScanData()
 	scan_data_information = []
 	for scan_data_tuple in scan_data:
-		type_code = scan_data_tuple[0]
-		description = scan_data_tuple[1]
-		value = scan_data_tuple[2]
-		if type_code == 8:
-			device_name = value
+		advertising_data = AdvertisingData(*scan_data_tuple)
+		if advertising_data.type_code == SHORT_LOCAL_NAME_TYPE_CODE:
+			device_name = advertising_data.value
 		scan_data_information.append({
-			'type_code': type_code,
-			'description': description,
-			'value': value})
+			'type_code': advertising_data.type_code,
+			'description': advertising_data.description,
+			'value': advertising_data.value})
 	# Connect to device
 	print('Connecting to device')
 	peripheral = bluepy.btle.Peripheral()
