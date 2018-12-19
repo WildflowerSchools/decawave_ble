@@ -1,5 +1,6 @@
 import bluepy.btle
 import json
+import collections
 import bitstruct
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -42,7 +43,27 @@ UNKNOWN_03_CHARACTERISTIC_UUID = '17b1613e-98f2-4436-bcde-23af17a10c72'
 UNKNOWN_04_CHARACTERISTIC_UUID = '28d01d60-89de-4bfa-b6e9-651ba596232c'
 UNKNOWN_05_CHARACTERISTIC_UUID = '5b10c428-af2f-486f-aee1-9dbd79b6bccb'
 
-# Mappings from integers to names
+# Format strings (in bitstruct format) and field names for network
+# node service characteristics (from documentation)
+
+OPERATION_MODE_FORMAT_STRING = 'u1u2u1b1b1b1b1b1b1b1u4'
+OPERATION_MODE_FIELD_NAMES = [
+	'device_type',
+	'uwb_mode',
+	'fw_version',
+	'accelerometer_enable',
+	'led_enable',
+	'fw_update_enable',
+	'reserved_01',
+	'initiator',
+	'low_power_mode',
+	'location_engine',
+	'reserved_02']
+OperationModeData = collections.namedtuple(
+	'OperationModeData',
+	OPERATION_MODE_FIELD_NAMES)
+
+# Mappings from integer data values to names
 DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
 UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
 FW_VERSION_NAMES = ['1', '2']
@@ -109,8 +130,11 @@ for decawave_scan_entry in decawave_scan_entries:
 	network_node_service = peripheral.getServiceByUUID(NETWORK_NODE_SERVICE_UUID)
 	print('Getting operation mode data')
 	operation_mode_characteristic = network_node_service.getCharacteristics(OPERATION_MODE_CHARACTERISTIC_UUID)[0]
-	operation_mode_data = operation_mode_characteristic.read()
-	device_type, uwb_mode, fw_version, accelerometer_enable, led_enable, fw_update_enable, reserved_01, initiator, low_power_mode, location_engine, reserved_02 = bitstruct.unpack('b1u2u1b1b1b1b1b1b1b1u4', operation_mode_data)
+	operation_mode_bytes = operation_mode_characteristic.read()
+	operation_mode_data = OperationModeData(
+		*bitstruct.unpack(
+			OPERATION_MODE_FORMAT_STRING,
+			operation_mode_bytes))
 	peripheral.disconnect()
 	decawave_devices.append({
 		'mac_address': mac_address,
@@ -119,15 +143,15 @@ for decawave_scan_entry in decawave_scan_entries:
 		'iface': iface,
 		'rssi': rssi,
 		'connectable': connectable,
-		'device_type': device_type,
-		'uwb_mode': uwb_mode,
-		'fw_version': fw_version,
-		'accelerometer_enable': accelerometer_enable,
-		'led_enable': led_enable,
-		'fw_update_enable': fw_update_enable,
-		'initiator': initiator,
-		'low_power_mode': low_power_mode,
-		'location_engine': location_engine,
+		'device_type': operation_mode_data.device_type,
+		'uwb_mode': operation_mode_data.uwb_mode,
+		'fw_version': operation_mode_data.fw_version,
+		'accelerometer_enable': operation_mode_data.accelerometer_enable,
+		'led_enable': operation_mode_data.led_enable,
+		'fw_update_enable': operation_mode_data.fw_update_enable,
+		'initiator': operation_mode_data.initiator,
+		'low_power_mode': operation_mode_data.low_power_mode,
+		'location_engine': operation_mode_data.location_engine,
 		'scan_data': scan_data_information,
 		'services': services_information})
 
