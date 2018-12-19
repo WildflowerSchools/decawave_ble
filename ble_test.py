@@ -1,5 +1,6 @@
 import bluepy.btle
 import json
+import bitstruct
 
 class CustomJSONEncoder(json.JSONEncoder):
 	def default(self, obj):
@@ -41,6 +42,11 @@ UNKNOWN_03_CHARACTERISTIC_UUID = '17b1613e-98f2-4436-bcde-23af17a10c72'
 UNKNOWN_04_CHARACTERISTIC_UUID = '28d01d60-89de-4bfa-b6e9-651ba596232c'
 UNKNOWN_05_CHARACTERISTIC_UUID = '5b10c428-af2f-486f-aee1-9dbd79b6bccb'
 
+# Mappings from integers to names
+DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
+UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
+FW_VERSION_NAMES = ['1', '2']
+
 # Function for identifying Decawave devices
 def is_decawave_scan_entry(scan_entry):
 	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_AD_CODE)
@@ -68,19 +74,21 @@ for decawave_scan_entry in decawave_scan_entries:
 	iface = decawave_scan_entry.iface
 	rssi = decawave_scan_entry.rssi
 	connectable = decawave_scan_entry.connectable
-	print('Getting scan data for Decawave device {}'.format(mac_address))
+	print('\nGetting scan data for Decawave device {}'.format(mac_address))
 	scan_data = decawave_scan_entry.getScanData()
 	scan_data_information = []
 	for scan_data_tuple in scan_data:
 		type_code = scan_data_tuple[0]
 		description = scan_data_tuple[1]
 		value = scan_data_tuple[2]
+		if type_code == 8:
+			device_name = value
 		scan_data_information.append({
 			'type_code': type_code,
 			'description': description,
 			'value': value})
 	peripheral = bluepy.btle.Peripheral()
-	print('\nConnecting to Decawave device {}'.format(mac_address))
+	print('Connecting to Decawave device {}'.format(mac_address))
 	peripheral.connect(mac_address)
 	print('Getting services for Decawave device {}'.format(mac_address))
 	services = list(peripheral.getServices())
@@ -97,13 +105,29 @@ for decawave_scan_entry in decawave_scan_entries:
 		services_information.append({
 			'service_uuid': service_uuid,
 			'characteristics': characteristics_information})
+	print('Getting network node service')
+	network_node_service = peripheral.getServiceByUUID(NETWORK_NODE_SERVICE_UUID)
+	print('Getting operation mode data')
+	operation_mode_characteristic = network_node_service.getCharacteristics(OPERATION_MODE_CHARACTERISTIC_UUID)[0]
+	operation_mode_data = operation_mode_characteristic.read()
+	device_type, uwb_mode, fw_version, accelerometer_enable, led_enable, fw_update_enable, reserved_01, initiator, low_power_mode, location_engine, reserved_02 = bitstruct.unpack('b1u2u1b1b1b1b1b1b1b1u4', operation_mode_data)
 	peripheral.disconnect()
 	decawave_devices.append({
 		'mac_address': mac_address,
+		'device_name': device_name,
 		'addrType': addrType,
 		'iface': iface,
 		'rssi': rssi,
 		'connectable': connectable,
+		'device_type': device_type,
+		'uwb_mode': uwb_mode,
+		'fw_version': fw_version,
+		'accelerometer_enable': accelerometer_enable,
+		'led_enable': led_enable,
+		'fw_update_enable': fw_update_enable,
+		'initiator': initiator,
+		'low_power_mode': low_power_mode,
+		'location_engine': location_engine,
 		'scan_data': scan_data_information,
 		'services': services_information})
 
@@ -118,10 +142,20 @@ with open(text_output_path, 'w') as file:
 	file.write('{} Decawave devices found:\n'.format(num_decawave_devices))
 	for decawave_device in decawave_devices:
 		file.write('\nDevice MAC address: {}\n'.format(decawave_device['mac_address']))
+		file.write('\nDevice name: {}\n'.format(decawave_device['device_name']))
 		file.write('Address type: {}\n'.format(decawave_device['addrType']))
 		file.write('Interface number: {}\n'.format(decawave_device['iface']))
 		file.write('RSSI (dB): {}\n'.format(decawave_device['rssi']))
 		file.write('Connectable: {}\n'.format(decawave_device['connectable']))
+		file.write('Device type: {}\n'.format(DEVICE_TYPE_NAMES[decawave_device['device_type']]))
+		file.write('Initiator: {}\n'.format(decawave_device['initiator']))
+		file.write('UWB mode: {}\n'.format(UWB_MODE_NAMES[decawave_device['uwb_mode']]))
+		file.write('Firmware version: {}\n'.format(FW_VERSION_NAMES[decawave_device['fw_version']]))
+		file.write('Firmware update enabled: {}\n'.format(decawave_device['fw_update_enable']))
+		file.write('Accelerometer enabled: {}\n'.format(decawave_device['accelerometer_enable']))
+		file.write('LED enabled: {}\n'.format(decawave_device['led_enable']))
+		file.write('Low power mode: {}\n'.format(decawave_device['low_power_mode']))
+		file.write('Location engine enabled: {}\n'.format(decawave_device['location_engine']))
 		file.write('Advertising data:\n')
 		for scan_data_item in decawave_device['scan_data']:
 			file.write('  Type code: {}\n'.format(scan_data_item['type_code']))
