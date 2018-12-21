@@ -15,15 +15,6 @@ output_path_stem = 'scan_results'
 text_output_path = output_path_stem + '.txt'
 json_output_path = output_path_stem + '.json'
 
-# Structure for BLE advertising data tuple
-ADVERTISING_DATA_FIELD_NAMES = [
-	'type_code',
-	'description',
-	'value']
-AdvertisingData = collections.namedtuple(
-	'AdvertisingData',
-	ADVERTISING_DATA_FIELD_NAMES)
-
 # BLE advertising data type codes
 SHORT_LOCAL_NAME_TYPE_CODE = 8
 
@@ -83,7 +74,7 @@ def parse_location_data_mode_bytes(location_data_mode_bytes):
 	location_data_mode = location_data_mode_bytes[0]
 	return location_data_mode
 
-# Names of loction data mode data values
+# Names of location data mode data values
 LOCATION_DATA_MODE_NAMES = [
 	'Position',
 	'Distances',
@@ -155,14 +146,14 @@ for decawave_scan_entry in decawave_scan_entries:
 	scan_data = decawave_scan_entry.getScanData()
 	scan_data_information = []
 	for scan_data_tuple in scan_data:
-		advertising_data = AdvertisingData(*scan_data_tuple)
-		if advertising_data.type_code == SHORT_LOCAL_NAME_TYPE_CODE:
-			device_name = advertising_data.value
+		type_code, description, value = scan_data_tuple
+		if type_code == SHORT_LOCAL_NAME_TYPE_CODE:
+			device_name = value
 			print('Device name: {}'.format(device_name))
 		scan_data_information.append({
-			'type_code': advertising_data.type_code,
-			'description': advertising_data.description,
-			'value': advertising_data.value})
+			'type_code': type_code,
+			'description': description,
+			'value': value})
 	# Connect to device
 	print('Connecting to device')
 	peripheral = bluepy.btle.Peripheral()
