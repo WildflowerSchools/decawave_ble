@@ -130,7 +130,7 @@ def is_decawave_scan_entry(scan_entry):
 	return (short_local_name is not None and short_local_name.startswith('DW'))
 
 # Scan for BLE devices
-print('Scanning for BLE devices')
+print('\nScanning for BLE devices')
 scanner = bluepy.btle.Scanner()
 scan_entries = scanner.scan()
 print('Finished scanning for BLE devices')
@@ -158,6 +158,7 @@ for decawave_scan_entry in decawave_scan_entries:
 		advertising_data = AdvertisingData(*scan_data_tuple)
 		if advertising_data.type_code == SHORT_LOCAL_NAME_TYPE_CODE:
 			device_name = advertising_data.value
+			print('Device name: {}'.format(device_name))
 		scan_data_information.append({
 			'type_code': advertising_data.type_code,
 			'description': advertising_data.description,
