@@ -51,27 +51,29 @@ ANCHOR_MAC_STATS_CHARACTERISTIC_UUID = '28d01d60-89de-4bfa-b6e9-651ba596232c'
 ANCHOR_LIST_CHARACTERISTIC_UUID = '5b10c428-af2f-486f-aee1-9dbd79b6bccb'
 TAG_UPDATE_RATE_CHARACTERISTIC_UUID = '7bd47f30-5602-4389-b069-8305731308b6'
 
-# Format strings, field names, and data value names for network node service
-# characteristics (from documentation)
+# Data and functions for parsing network node service characteristics
+# (from documentation)
 
-# Operation mode characteristic
-OPERATION_MODE_FORMAT_STRING = 'u1u2u1b1b1b1b1b1b1b1u4'
-OPERATION_MODE_FIELD_NAMES = [
-	'device_type',
-	'uwb_mode',
-	'fw_version',
-	'accelerometer_enable',
-	'led_enable',
-	'fw_update_enable',
-	'reserved_01',
-	'initiator',
-	'low_power_mode',
-	'location_engine',
-	'reserved_02']
-OperationModeData = collections.namedtuple(
-	'OperationModeData',
-	OPERATION_MODE_FIELD_NAMES)
+# Function for parsing bytes from operation mode characteristic
+def parse_operation_mode_bytes(operation_mode_bytes):
+	operation_mode_data = bitstruct.unpack_dict(
+		'u1u2u1b1b1b1b1b1b1b1u4',
+		[
+			'device_type',
+			'uwb_mode',
+			'fw_version',
+			'accelerometer_enable',
+			'led_enable',
+			'fw_update_enable',
+			'reserved_01',
+			'initiator',
+			'low_power_mode',
+			'location_engine',
+			'reserved_02'],
+		operation_mode_bytes)
+	return operation_mode_data
 
+# Names of operation mode data values
 DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
 UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
 FW_VERSION_NAMES = ['1', '2']
@@ -191,11 +193,7 @@ for decawave_scan_entry in decawave_scan_entries:
 	print('Getting operation mode data')
 	operation_mode_characteristic = network_node_service.getCharacteristics(OPERATION_MODE_CHARACTERISTIC_UUID)[0]
 	operation_mode_bytes = operation_mode_characteristic.read()
-	operation_mode_data = OperationModeData(
-		*bitstruct.unpack(
-			OPERATION_MODE_FORMAT_STRING,
-			operation_mode_bytes))
-	# Get location data mode data
+	operation_mode_data = parse_operation_mode_bytes(operation_mode_bytes)
 	print('Getting location data mode data')
 	location_data_mode_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_MODE_CHARACTERISTIC_UUID)[0]
 	location_data_mode_bytes = location_data_mode_characteristic.read()
@@ -219,15 +217,15 @@ for decawave_scan_entry in decawave_scan_entries:
 		'iface': iface,
 		'rssi': rssi,
 		'connectable': connectable,
-		'device_type': operation_mode_data.device_type,
-		'uwb_mode': operation_mode_data.uwb_mode,
-		'fw_version': operation_mode_data.fw_version,
-		'accelerometer_enable': operation_mode_data.accelerometer_enable,
-		'led_enable': operation_mode_data.led_enable,
-		'fw_update_enable': operation_mode_data.fw_update_enable,
-		'initiator': operation_mode_data.initiator,
-		'low_power_mode': operation_mode_data.low_power_mode,
-		'location_engine': operation_mode_data.location_engine,
+		'device_type': operation_mode_data['device_type'],
+		'uwb_mode': operation_mode_data['uwb_mode'],
+		'fw_version': operation_mode_data['fw_version'],
+		'accelerometer_enable': operation_mode_data['accelerometer_enable'],
+		'led_enable': operation_mode_data['led_enable'],
+		'fw_update_enable': operation_mode_data['fw_update_enable'],
+		'initiator': operation_mode_data['initiator'],
+		'low_power_mode': operation_mode_data['low_power_mode'],
+		'location_engine': operation_mode_data['location_engine'],
 		'location_data_mode': location_data_mode_data.location_data_mode,
 		'location_data_list': location_data_list,
 		'location_data': location_data,
