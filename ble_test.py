@@ -243,27 +243,16 @@ print('Saving results in {}'.format(text_output_path))
 with open(text_output_path, 'w') as file:
 	file.write('{} Decawave devices found:\n'.format(num_decawave_devices))
 	for decawave_device in decawave_devices:
-		file.write('\nDevice MAC address: {}\n'.format(decawave_device['mac_address']))
-		file.write('Device name: {}\n'.format(decawave_device['device_name']))
-		file.write('Address type: {}\n'.format(decawave_device['addrType']))
-		file.write('Interface number: {}\n'.format(decawave_device['iface']))
-		file.write('RSSI (dB): {}\n'.format(decawave_device['rssi']))
-		file.write('Connectable: {}\n'.format(decawave_device['connectable']))
+		file.write('\nDevice name: {}\n'.format(decawave_device['device_name']))
+		file.write('RSSI: {} dB\n'.format(decawave_device['rssi']))
 		file.write('Device type: {}\n'.format(DEVICE_TYPE_NAMES[decawave_device['device_type']]))
 		file.write('Initiator: {}\n'.format(decawave_device['initiator']))
 		file.write('UWB mode: {}\n'.format(UWB_MODE_NAMES[decawave_device['uwb_mode']]))
-		file.write('Firmware version: {}\n'.format(FW_VERSION_NAMES[decawave_device['fw_version']]))
-		file.write('Firmware update enabled: {}\n'.format(decawave_device['fw_update_enable']))
-		file.write('Accelerometer enabled: {}\n'.format(decawave_device['accelerometer_enable']))
-		file.write('LED enabled: {}\n'.format(decawave_device['led_enable']))
-		file.write('Low power mode: {}\n'.format(decawave_device['low_power_mode']))
-		file.write('Location engine enabled: {}\n'.format(decawave_device['location_engine']))
-		file.write('Location data mode: {}\n'.format(LOCATION_DATA_MODE_NAMES[decawave_device['location_data_mode']]))
 		if decawave_device['location_data']['position_data'] is not None:
 			file.write('Position data:\n')
-			file.write('  X (mm): {}\n'.format(decawave_device['location_data']['position_data']['x_position']))
-			file.write('  Y (mm): {}\n'.format(decawave_device['location_data']['position_data']['y_position']))
-			file.write('  Z (mm): {}\n'.format(decawave_device['location_data']['position_data']['z_position']))
+			file.write('  X: {} mm\n'.format(decawave_device['location_data']['position_data']['x_position']))
+			file.write('  Y: {} mm\n'.format(decawave_device['location_data']['position_data']['y_position']))
+			file.write('  Z: {} mm\n'.format(decawave_device['location_data']['position_data']['z_position']))
 			file.write('  Quality: {}\n'.format(decawave_device['location_data']['position_data']['quality']))
 		if decawave_device['location_data']['distance_data'] is not None:
 			file.write('Distance data:\n')
@@ -272,16 +261,4 @@ with open(text_output_path, 'w') as file:
 					distance_datum['node_id'],
 					distance_datum['distance'],
 					distance_datum['quality']))
-		file.write('Advertising data:\n')
-		for scan_data_item in decawave_device['scan_data']:
-			file.write('  {} ({}): {}\n'.format(
-				scan_data_item['description'],
-				scan_data_item['type_code'],
-				scan_data_item['value']))
-		file.write('Services:\n')
-		for service in decawave_device['services']:
-			file.write('  UUID: {}\n'.format(service['service_uuid']))
-			file.write('  Characteristics:\n')
-			for characteristic in service['characteristics']:
-				file.write('    UUID: {}\n'.format(characteristic['characteristic_uuid']))
 
