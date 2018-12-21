@@ -71,6 +71,7 @@ OPERATION_MODE_FIELD_NAMES = [
 OperationModeData = collections.namedtuple(
 	'OperationModeData',
 	OPERATION_MODE_FIELD_NAMES)
+
 DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
 UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
 FW_VERSION_NAMES = ['1', '2']
@@ -82,10 +83,46 @@ LOCATION_DATA_MODE_FIELD_NAMES = [
 LocationDataModeData = collections.namedtuple(
 	'LocationDataModeData',
 	LOCATION_DATA_MODE_FIELD_NAMES)
+
 LOCATION_DATA_MODE_NAMES = [
 	'Position',
 	'Distances',
 	'Position and distances']
+
+# Function for parsing bytes from location data characteristic
+
+def parse_location_data_bytes(location_data_bytes):
+	if len(location_data_bytes) > 0:
+		location_data_content = location_data_bytes[0]
+		location_data_bytes = location_data_bytes[1:]
+	else:
+		location_data_content = None
+	if (location_data_content == 0 or location_data_content == 2):
+		position_bytes = location_data_bytes[:13]
+		loction_data_bytes = location_data_bytes[13:]
+		position_data = bitstruct.unpack_dict(
+			's32s32s32u8<',
+			['x_position', 'y_position', 'z_position', 'quality'],
+			position_bytes)
+	else:
+		position_data = None
+	if (location_data_content == 1 or location_data_content == 2):
+		distance_count = location_data_bytes[0]
+		location_data_bytes = location_data_bytes[1:]
+		distance_data=[]
+		for distance_data_index in range(distance_count):
+			distance_datum_bytes = location_data_bytes[:7]
+			location_data_bytes = location_data_bytes[7:]
+			distance_datum = bitstruct.unpack_dict(
+				'u16u32u8<',
+				['node_id', 'distance', 'quality'],
+				distance_datum_bytes)
+			distance_data.append(distance_datum)
+	else:
+		distance_data = None
+	return {
+		'position_data': position_data,
+		'distance_data': distance_data}
 
 # Function for identifying Decawave devices
 def is_decawave_scan_entry(scan_entry):
@@ -165,6 +202,12 @@ for decawave_scan_entry in decawave_scan_entries:
 		*bitstruct.unpack(
 			LOCATION_DATA_MODE_FORMAT_STRING,
 			location_data_mode_bytes))
+	# Get location data
+	print('Getting location data')
+	location_data_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_CHARACTERISTIC_UUID)[0]
+	location_data_bytes = location_data_characteristic.read()
+	location_data_list = list(location_data_bytes)
+	location_data = parse_location_data_bytes(location_data_bytes)
 	# Disconnect from device
 	peripheral.disconnect()
 	# Populate device data
@@ -185,6 +228,8 @@ for decawave_scan_entry in decawave_scan_entries:
 		'low_power_mode': operation_mode_data.low_power_mode,
 		'location_engine': operation_mode_data.location_engine,
 		'location_data_mode': location_data_mode_data.location_data_mode,
+		'location_data_list': location_data_list,
+		'location_data': location_data,
 		'scan_data': scan_data_information,
 		'services': services_information})
 
@@ -214,6 +259,19 @@ with open(text_output_path, 'w') as file:
 		file.write('Low power mode: {}\n'.format(decawave_device['low_power_mode']))
 		file.write('Location engine enabled: {}\n'.format(decawave_device['location_engine']))
 		file.write('Location data mode: {}\n'.format(LOCATION_DATA_MODE_NAMES[decawave_device['location_data_mode']]))
+		if decawave_device['location_data']['position_data'] is not None:
+			file.write('Position data:\n')
+			file.write('  X (mm): {}\n'.format(decawave_device['location_data']['position_data']['x_position']))
+			file.write('  Y (mm): {}\n'.format(decawave_device['location_data']['position_data']['y_position']))
+			file.write('  Z (mm): {}\n'.format(decawave_device['location_data']['position_data']['z_position']))
+			file.write('  Quality: {}\n'.format(decawave_device['location_data']['position_data']['quality']))
+		if decawave_device['location_data']['distance_data'] is not None:
+			file.write('Distance data:\n')
+			for distance_datum in decawave_device['location_data']['distance_data']:
+				file.write('  {:04X}: {} mm (Q={})\n'.format(
+					distance_datum['node_id'],
+					distance_datum['distance'],
+					distance_datum['quality']))
 		file.write('Advertising data:\n')
 		for scan_data_item in decawave_device['scan_data']:
 			file.write('  {} ({}): {}\n'.format(
