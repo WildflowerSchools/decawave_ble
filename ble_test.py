@@ -79,13 +79,11 @@ UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
 FW_VERSION_NAMES = ['1', '2']
 
 # Location data mode characteristic
-LOCATION_DATA_MODE_FORMAT_STRING = 'u8'
-LOCATION_DATA_MODE_FIELD_NAMES = [
-	'location_data_mode']
-LocationDataModeData = collections.namedtuple(
-	'LocationDataModeData',
-	LOCATION_DATA_MODE_FIELD_NAMES)
+def parse_location_data_mode_bytes(location_data_mode_bytes):
+	location_data_mode = location_data_mode_bytes[0]
+	return location_data_mode
 
+# Names of loction data mode data values
 LOCATION_DATA_MODE_NAMES = [
 	'Position',
 	'Distances',
@@ -194,13 +192,11 @@ for decawave_scan_entry in decawave_scan_entries:
 	operation_mode_characteristic = network_node_service.getCharacteristics(OPERATION_MODE_CHARACTERISTIC_UUID)[0]
 	operation_mode_bytes = operation_mode_characteristic.read()
 	operation_mode_data = parse_operation_mode_bytes(operation_mode_bytes)
+	# Get location data mode data
 	print('Getting location data mode data')
 	location_data_mode_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_MODE_CHARACTERISTIC_UUID)[0]
 	location_data_mode_bytes = location_data_mode_characteristic.read()
-	location_data_mode_data = LocationDataModeData(
-		*bitstruct.unpack(
-			LOCATION_DATA_MODE_FORMAT_STRING,
-			location_data_mode_bytes))
+	location_data_mode = parse_location_data_mode_bytes(location_data_mode_bytes)
 	# Get location data
 	print('Getting location data')
 	location_data_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_CHARACTERISTIC_UUID)[0]
@@ -226,7 +222,7 @@ for decawave_scan_entry in decawave_scan_entries:
 		'initiator': operation_mode_data['initiator'],
 		'low_power_mode': operation_mode_data['low_power_mode'],
 		'location_engine': operation_mode_data['location_engine'],
-		'location_data_mode': location_data_mode_data.location_data_mode,
+		'location_data_mode': location_data_mode,
 		'location_data_list': location_data_list,
 		'location_data': location_data,
 		'scan_data': scan_data_information,
