@@ -18,6 +18,11 @@ json_output_path = output_path_stem + '.json'
 # BLE advertising data type codes
 SHORT_LOCAL_NAME_TYPE_CODE = 8
 
+# Function for identifying Decawave devices from advertising data
+def is_decawave_scan_entry(scan_entry):
+	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
+	return (short_local_name is not None and short_local_name.startswith('DW'))
+
 # Known Decawave services (from documentation)
 NETWORK_NODE_SERVICE_UUID = '680c21d9-c946-4c1f-9c11-baa1c21329e7'
 
@@ -114,11 +119,6 @@ def parse_location_data_bytes(location_data_bytes):
 	return {
 		'position_data': position_data,
 		'distance_data': distance_data}
-
-# Function for identifying Decawave devices
-def is_decawave_scan_entry(scan_entry):
-	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
-	return (short_local_name is not None and short_local_name.startswith('DW'))
 
 # Scan for BLE devices
 print('\nScanning for BLE devices')
