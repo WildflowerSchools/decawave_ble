@@ -192,7 +192,6 @@ for decawave_scan_entry in decawave_scan_entries:
 	print('Getting location data')
 	location_data_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_CHARACTERISTIC_UUID)[0]
 	location_data_bytes = location_data_characteristic.read()
-	location_data_list = list(location_data_bytes)
 	location_data = parse_location_data_bytes(location_data_bytes)
 	# Disconnect from device
 	peripheral.disconnect()
@@ -214,7 +213,6 @@ for decawave_scan_entry in decawave_scan_entries:
 		'low_power_mode': operation_mode_data['low_power_mode'],
 		'location_engine': operation_mode_data['location_engine'],
 		'location_data_mode': location_data_mode,
-		'location_data_list': location_data_list,
 		'location_data': location_data,
 		'scan_data': scan_data_information,
 		'services': services_information})
