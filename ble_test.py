@@ -103,6 +103,7 @@ def parse_location_data_bytes(location_data_bytes):
 		position_data = None
 	if (location_data_content == 1 or location_data_content == 2):
 		distance_count = location_data_bytes[0]
+		print('Distance count: {}'.format(distance_count))
 		location_data_bytes = location_data_bytes[1:]
 		distance_data=[]
 		for distance_data_index in range(distance_count):
@@ -121,10 +122,13 @@ def parse_location_data_bytes(location_data_bytes):
 
 # Function for parsing bytes from network ID characteristic
 def parse_network_id_bytes(network_id_bytes):
-	network_id = bitstruct.unpack(
-		'u16',
-		network_id_bytes)[0]
-	return network_id
+	if len(network_id_bytes) > 0:
+		network_id = bitstruct.unpack(
+			'u16<',
+			network_id_bytes)[0]
+		return network_id
+	else:
+		return None
 
 # Function for parsing bytes from proxy positions characteristic
 def parse_proxy_positions_bytes(proxy_positions_bytes):
@@ -147,7 +151,7 @@ def parse_proxy_positions_bytes(proxy_positions_bytes):
 # Function for parsing bytes from device info characteristic
 def parse_device_info_bytes(device_info_bytes):
 	device_info_data = bitstruct.unpack_dict(
-		'u64u32u32u32u32u32b1u7',
+		'u64u32u32u32u32u32b1u7<',
 		[
 			'node_id',
 			'hw_version',
@@ -170,17 +174,17 @@ def parse_anchor_list_bytes(anchor_list_bytes):
 			node_id_bytes = anchor_list_bytes[:2]
 			anchor_data_bytes = anchor_list_bytes[2:]
 			node_id = bitstruct.unpack(
-				'u16',
-				node_id_bytes)
+				'u16<',
+				node_id_bytes)[0]
 			anchor_list_data.append(node_id)
 		return anchor_list_data
 	else:
 		return None
 
-# Function for parsing bytes from operation mode characteristic
+# Function for parsing bytes from update rate characteristic
 def parse_update_rate_bytes(update_rate_bytes):
 	update_rate_data = bitstruct.unpack_dict(
-		'u32u32',
+		'u32u32<',
 		[
 			'moving_update_rate',
 			'stationary_update_rate'],
@@ -276,7 +280,7 @@ for decawave_scan_entry in decawave_scan_entries:
 	proxy_positions_bytes = proxy_positions_characteristic.read()
 	proxy_positions_data = parse_proxy_positions_bytes(proxy_positions_bytes)
 	# Get anchor list data
-	if DEVICE_TYPE_NAMES[operation_mode_data['device_type']] == 'Anchor'):
+	if DEVICE_TYPE_NAMES[operation_mode_data['device_type']] == 'Anchor':
 		print('Getting anchor list data')
 		anchor_list_characteristic = network_node_service.getCharacteristics(ANCHOR_LIST_CHARACTERISTIC_UUID)[0]
 		anchor_list_bytes = anchor_list_characteristic.read()
@@ -284,7 +288,7 @@ for decawave_scan_entry in decawave_scan_entries:
 	else:
 		anchor_list_data = None
 	# Get anchor list data
-	if DEVICE_TYPE_NAMES[operation_mode_data['device_type']] == 'Tag'):
+	if DEVICE_TYPE_NAMES[operation_mode_data['device_type']] == 'Tag':
 		print('Getting update rate data')
 		update_rate_characteristic = network_node_service.getCharacteristics(TAG_UPDATE_RATE_CHARACTERISTIC_UUID)[0]
 		update_rate_bytes = update_rate_characteristic.read()
@@ -310,14 +314,6 @@ for decawave_scan_entry in decawave_scan_entries:
 		'initiator': operation_mode_data['initiator'],
 		'low_power_mode': operation_mode_data['low_power_mode'],
 		'location_engine': operation_mode_data['location_engine'],
-			'node_id',
-			'hw_version',
-			'fw1_version',
-			'fw2_version',
-			'fw1_checksum',
-			'fw2_checksum',
-			'bridge',
-			'unknown'],
 		'node_id': device_info_data['node_id'],
 		'hw_version': device_info_data['hw_version'],
 		'fw1_version': device_info_data['fw1_version'],
@@ -383,5 +379,5 @@ with open(text_output_path, 'w') as file:
 			for node_id in decawave_device['anchor_list_data']:
 				file.write('  Node ID: {:04X}\n'.format(node_id))
 		if decawave_device['update_rate_data'] is not None:
-			file.write('Moving update rate (ms): {}\n'.format(decawave_device['anchor_list_data']['moving_update_rate']))
-			file.write('Stationary update rate (ms): {}\n'.format(decawave_device['anchor_list_data']['stationary_update_rate']))
+			file.write('Moving update rate (ms): {}\n'.format(decawave_device['update_rate_data']['moving_update_rate']))
+			file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
