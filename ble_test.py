@@ -94,7 +94,7 @@ def parse_location_data_bytes(location_data_bytes):
 		location_data_content = None
 	if (location_data_content == 0 or location_data_content == 2):
 		position_bytes = location_data_bytes[:13]
-		loction_data_bytes = location_data_bytes[13:]
+		location_data_bytes = location_data_bytes[13:]
 		position_data = bitstruct.unpack_dict(
 			's32s32s32u8<',
 			['x_position', 'y_position', 'z_position', 'quality'],
