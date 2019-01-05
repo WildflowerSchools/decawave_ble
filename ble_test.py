@@ -74,7 +74,7 @@ DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
 UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
 FW_VERSION_NAMES = ['1', '2']
 
-# Location data mode characteristic
+# Function for parsing bytes from location data mode characteristic
 def parse_location_data_mode_bytes(location_data_mode_bytes):
 	location_data_mode = location_data_mode_bytes[0]
 	return location_data_mode
@@ -86,7 +86,6 @@ LOCATION_DATA_MODE_NAMES = [
 	'Position and distances']
 
 # Function for parsing bytes from location data characteristic
-
 def parse_location_data_bytes(location_data_bytes):
 	if len(location_data_bytes) > 0:
 		location_data_content = location_data_bytes[0]
@@ -119,6 +118,74 @@ def parse_location_data_bytes(location_data_bytes):
 	return {
 		'position_data': position_data,
 		'distance_data': distance_data}
+
+# Function for parsing bytes from network ID characteristic
+def parse_network_id_bytes(network_id_bytes):
+	network_id = bitstruct.unpack(
+		'u16',
+		network_id_bytes)[0]
+	return network_id
+
+# Function for parsing bytes from proxy positions characteristic
+def parse_proxy_positions_bytes(proxy_positions_bytes):
+	if len(proxy_positions_bytes) > 0:
+		num_elements = proxy_positions_bytes[0]
+		proxy_positions_bytes = proxy_positions_bytes[1:]
+		proxy_positions_data = []
+		for element_index in range(num_elements):
+			position_bytes = proxy_positions_bytes[:15]
+			proxy_positions_bytes = proxy_positions_bytes[15:]
+			position_data = bitstruct.unpack_dict(
+				'u16s32s32s32u8<',
+				['node_id', 'x_position', 'y_position', 'z_position', 'quality'],
+				position_bytes)
+			proxy_positions_data.append(position_data)
+		return proxy_positions_data
+	else:
+		return None
+
+# Function for parsing bytes from device info characteristic
+def parse_device_info_bytes(device_info_bytes):
+	device_info_data = bitstruct.unpack_dict(
+		'u64u32u32u32u32u32b1u7',
+		[
+			'node_id',
+			'hw_version',
+			'fw1_version',
+			'fw2_version',
+			'fw1_checksum',
+			'fw2_checksum',
+			'bridge',
+			'unknown'],
+		device_info_bytes)
+	return device_info_data
+
+# Function for parsing bytes from anchor list characteristic
+def parse_anchor_list_bytes(anchor_list_bytes):
+	if len(anchor_list_bytes) > 0:
+		num_elements = anchor_list_bytes[0]
+		anchor_list_bytes = anchor_list_bytes[1:]
+		anchor_list_data = []
+		for element_index in range(num_elements):
+			node_id_bytes = anchor_list_bytes[:2]
+			anchor_data_bytes = anchor_list_bytes[2:]
+			node_id = bitstruct.unpack(
+				'u16',
+				node_id_bytes)
+			anchor_list_data.append(node_id)
+		return anchor_list_data
+	else:
+		return None
+
+# Function for parsing bytes from operation mode characteristic
+def parse_update_rate_bytes(update_rate_bytes):
+	update_rate_data = bitstruct.unpack_dict(
+		'u32u32',
+		[
+			'moving_update_rate',
+			'stationary_update_rate'],
+		update_rate_bytes)
+	return update_rate_data
 
 # Scan for BLE devices
 print('\nScanning for BLE devices')
@@ -183,6 +250,16 @@ for decawave_scan_entry in decawave_scan_entries:
 	operation_mode_characteristic = network_node_service.getCharacteristics(OPERATION_MODE_CHARACTERISTIC_UUID)[0]
 	operation_mode_bytes = operation_mode_characteristic.read()
 	operation_mode_data = parse_operation_mode_bytes(operation_mode_bytes)
+	# Get operation mode data
+	print('Getting device info data')
+	device_info_characteristic = network_node_service.getCharacteristics(DEVICE_INFO_CHARACTERISTIC_UUID)[0]
+	device_info_bytes = device_info_characteristic.read()
+	device_info_data = parse_device_info_bytes(device_info_bytes)
+	# Get network ID
+	print('Getting network ID')
+	network_id_characteristic = network_node_service.getCharacteristics(NETWORK_ID_CHARACTERISTIC_UUID)[0]
+	network_id_bytes = network_id_characteristic.read()
+	network_id = parse_network_id_bytes(network_id_bytes)
 	# Get location data mode data
 	print('Getting location data mode data')
 	location_data_mode_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_MODE_CHARACTERISTIC_UUID)[0]
@@ -193,6 +270,27 @@ for decawave_scan_entry in decawave_scan_entries:
 	location_data_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_CHARACTERISTIC_UUID)[0]
 	location_data_bytes = location_data_characteristic.read()
 	location_data = parse_location_data_bytes(location_data_bytes)
+	# Get proxy positions data
+	print('Getting proxy positions data')
+	proxy_positions_characteristic = network_node_service.getCharacteristics(PROXY_POSITION_CHARACTERISTIC_UUID)[0]
+	proxy_positions_bytes = proxy_positions_characteristic.read()
+	proxy_positions_data = parse_proxy_positions_bytes(proxy_positions_bytes)
+	# Get anchor list data
+	if DEVICE_TYPE_NAMES[operation_mode_data['device_type']] == 'Anchor'):
+		print('Getting anchor list data')
+		anchor_list_characteristic = network_node_service.getCharacteristics(ANCHOR_LIST_CHARACTERISTIC_UUID)[0]
+		anchor_list_bytes = anchor_list_characteristic.read()
+		anchor_list_data = parse_anchor_list_bytes(anchor_list_bytes)
+	else:
+		anchor_list_data = None
+	# Get anchor list data
+	if DEVICE_TYPE_NAMES[operation_mode_data['device_type']] == 'Tag'):
+		print('Getting update rate data')
+		update_rate_characteristic = network_node_service.getCharacteristics(TAG_UPDATE_RATE_CHARACTERISTIC_UUID)[0]
+		update_rate_bytes = update_rate_characteristic.read()
+		update_rate_data = parse_update_rate_bytes(update_rate_bytes)
+	else:
+		update_rate_data = None
 	# Disconnect from device
 	peripheral.disconnect()
 	# Populate device data
@@ -212,8 +310,27 @@ for decawave_scan_entry in decawave_scan_entries:
 		'initiator': operation_mode_data['initiator'],
 		'low_power_mode': operation_mode_data['low_power_mode'],
 		'location_engine': operation_mode_data['location_engine'],
+			'node_id',
+			'hw_version',
+			'fw1_version',
+			'fw2_version',
+			'fw1_checksum',
+			'fw2_checksum',
+			'bridge',
+			'unknown'],
+		'node_id': device_info_data['node_id'],
+		'hw_version': device_info_data['hw_version'],
+		'fw1_version': device_info_data['fw1_version'],
+		'fw2_version': device_info_data['fw2_version'],
+		'fw1_checksum': device_info_data['fw1_checksum'],
+		'fw2_checksum': device_info_data['fw2_checksum'],
+		'bridge': device_info_data['bridge'],
+		'network_id': network_id,
 		'location_data_mode': location_data_mode,
 		'location_data': location_data,
+		'proxy_positions_data': proxy_positions_data,
+		'anchor_list_data': anchor_list_data,
+		'update_rate_data': update_rate_data,
 		'scan_data': scan_data_information,
 		'services': services_information})
 
@@ -232,6 +349,14 @@ with open(text_output_path, 'w') as file:
 		file.write('Device type: {}\n'.format(DEVICE_TYPE_NAMES[decawave_device['device_type']]))
 		file.write('Initiator: {}\n'.format(decawave_device['initiator']))
 		file.write('UWB mode: {}\n'.format(UWB_MODE_NAMES[decawave_device['uwb_mode']]))
+		file.write('Network ID: {}\n'.format(decawave_device['network_id']))
+		file.write('Node ID: {:08X}\n'.format(decawave_device['node_id']))
+		file.write('Hardware version: {}\n'.format(decawave_device['hw_version']))
+		file.write('Firmware 1 version: {}\n'.format(decawave_device['fw1_version']))
+		file.write('Firmware 2 version: {}\n'.format(decawave_device['fw2_version']))
+		file.write('Firmware 1 checksum: {}\n'.format(decawave_device['fw1_checksum']))
+		file.write('Firmware 2 checksum: {}\n'.format(decawave_device['fw2_checksum']))
+		file.write('Bridge: {}\n'.format(decawave_device['bridge']))
 		if decawave_device['location_data']['position_data'] is not None:
 			file.write('Position data:\n')
 			file.write('  X: {} mm\n'.format(decawave_device['location_data']['position_data']['x_position']))
@@ -245,4 +370,18 @@ with open(text_output_path, 'w') as file:
 					distance_datum['node_id'],
 					distance_datum['distance'],
 					distance_datum['quality']))
-
+		if decawave_device['proxy_positions_data'] is not None:
+			file.write('Proxy positions data:\n')
+			for proxy_positions_datum in decawave_device['proxy_positions_data']:
+				file.write('  Node ID: {:04X}\n'.format(proxy_positions_datum['node_id']))
+				file.write('    X: {} mm\n'.format(proxy_positions_datum['x_position']))
+				file.write('    Y: {} mm\n'.format(proxy_positions_datum['y_position']))
+				file.write('    Z: {} mm\n'.format(proxy_positions_datum['z_position']))
+				file.write('    Quality: {}\n'.format(proxy_positions_datum['quality']))
+		if decawave_device['anchor_list_data'] is not None:
+			file.write('Anchor list data:\n')
+			for node_id in decawave_device['anchor_list_data']:
+				file.write('  Node ID: {:04X}\n'.format(node_id))
+		if decawave_device['update_rate_data'] is not None:
+			file.write('Moving update rate (ms): {}\n'.format(decawave_device['anchor_list_data']['moving_update_rate']))
+			file.write('Stationary update rate (ms): {}\n'.format(decawave_device['anchor_list_data']['stationary_update_rate']))
