@@ -18,6 +18,35 @@ json_output_path = output_path_stem + '.json'
 # BLE advertising data type codes
 SHORT_LOCAL_NAME_TYPE_CODE = 8
 
+# Function for retrieving Decawave scan entries
+def get_decawave_scan_entries():
+	print('\nScanning for BLE devices')
+	scanner = bluepy.btle.Scanner()
+	scan_entries = scanner.scan()
+	print('Finished scanning for BLE devices')
+	decawave_scan_entries = list(filter(is_decawave_scan_entry, scan_entries))
+	return decawave_scan_entries
+
+# Function for connecting to Decawave device
+def get_decawave_peripheral(decawave_scan_entry):
+	print('Connecting to device')
+	decawave_peripheral = bluepy.btle.Peripheral(decawave_scan_entry)
+	return decawave_peripheral
+
+# Function for connecting to Decawave network node service
+def get_decawave_network_node_service(decawave_peripheral):
+	print('Getting network node service')
+	decawave_network_node_service = decawave_peripheral.getServiceByUUID(NETWORK_NODE_SERVICE_UUID)
+	return decawave_network_node_service
+
+# Function for reading characteristic from Decawave network node service
+# (identified by UUID)
+def read_decawave_characteristic(decawave_peripheral, characteristic_uuid):
+	decawave_network_node_service = get_decawave_network_node_service(decawave_peripheral)
+	characteristic = decawave_network_node_service.getCharacteristics(characteristic_uuid)[0]
+	bytes = characteristic.read()
+	return(bytes)
+
 # Function for identifying Decawave devices from advertising data
 def is_decawave_scan_entry(scan_entry):
 	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
@@ -35,7 +64,7 @@ OPERATION_MODE_CHARACTERISTIC_UUID = '3f0afd88-7770-46b0-b5e7-9fc099598964'
 NETWORK_ID_CHARACTERISTIC_UUID = '80f9d8bc-3bff-45bb-a181-2d6a37991208'
 LOCATION_DATA_MODE_CHARACTERISTIC_UUID = 'a02b947e-df97-4516-996a-1882521e0ead'
 LOCATION_DATA_CHARACTERISTIC_UUID = '003bbdf2-c634-4b3d-ab56-7ec889b89a37'
-PROXY_POSITION_CHARACTERISTIC_UUID = 'f4a67d7d-379d-4183-9c03-4b6ea5103291'
+PROXY_POSITIONS_CHARACTERISTIC_UUID = 'f4a67d7d-379d-4183-9c03-4b6ea5103291'
 DEVICE_INFO_CHARACTERISTIC_UUID = '1e63b1eb-d4ed-444e-af54-c1e965192501'
 STATISTICS_CHARACTERISTIC_UUID = '0eb2bc59-baf1-4c1c-8535-8a0204c69de5'
 FW_UPDATE_PUSH_CHARACTERISTIC_UUID = '5955aa10-e085-4030-8aa6-bdfac89ac32b'
@@ -49,6 +78,14 @@ TAG_UPDATE_RATE_CHARACTERISTIC_UUID = '7bd47f30-5602-4389-b069-8305731308b6'
 
 # Data and functions for parsing network node service characteristics
 # (from documentation)
+
+# Function for getting operation mode data
+def get_operation_mode_data(decawave_peripheral):
+	bytes = read_decawave_characteristic(
+		decawave_peripheral,
+		OPERATION_MODE_CHARACTERISTIC_UUID)
+	data = parse_operation_mode_bytes(bytes)
+	return(data)
 
 # Function for parsing bytes from operation mode characteristic
 def parse_operation_mode_bytes(operation_mode_bytes):
@@ -74,6 +111,14 @@ DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
 UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
 FW_VERSION_NAMES = ['1', '2']
 
+# Function for getting location data mode data
+def get_location_data_mode(decawave_peripheral):
+	bytes = read_decawave_characteristic(
+		decawave_peripheral,
+		LOCATION_DATA_MODE_CHARACTERISTIC_UUID)
+	data = parse_location_data_mode_bytes(bytes)
+	return(data)
+
 # Function for parsing bytes from location data mode characteristic
 def parse_location_data_mode_bytes(location_data_mode_bytes):
 	location_data_mode = location_data_mode_bytes[0]
@@ -84,6 +129,14 @@ LOCATION_DATA_MODE_NAMES = [
 	'Position',
 	'Distances',
 	'Position and distances']
+
+# Function for getting location data
+def get_location_data(decawave_peripheral):
+	bytes = read_decawave_characteristic(
+		decawave_peripheral,
+		LOCATION_DATA_CHARACTERISTIC_UUID)
+	data = parse_location_data_bytes(bytes)
+	return(data)
 
 # Function for parsing bytes from location data characteristic
 def parse_location_data_bytes(location_data_bytes):
@@ -120,6 +173,14 @@ def parse_location_data_bytes(location_data_bytes):
 		'position_data': position_data,
 		'distance_data': distance_data}
 
+# Function for getting network ID
+def get_network_id(decawave_peripheral):
+	bytes = read_decawave_characteristic(
+		decawave_peripheral,
+		NETWORK_ID_CHARACTERISTIC_UUID)
+	data = parse_network_id_bytes(bytes)
+	return(data)
+
 # Function for parsing bytes from network ID characteristic
 def parse_network_id_bytes(network_id_bytes):
 	if len(network_id_bytes) > 0:
@@ -129,6 +190,14 @@ def parse_network_id_bytes(network_id_bytes):
 		return network_id
 	else:
 		return None
+
+# Function for getting proxy positions data
+def get_proxy_positions_data(decawave_peripheral):
+	bytes = read_decawave_characteristic(
+		decawave_peripheral,
+		PROXY_POSITIONS_CHARACTERISTIC_UUID)
+	data = parse_proxy_positions_bytes(bytes)
+	return(data)
 
 # Function for parsing bytes from proxy positions characteristic
 def parse_proxy_positions_bytes(proxy_positions_bytes):
@@ -148,6 +217,14 @@ def parse_proxy_positions_bytes(proxy_positions_bytes):
 	else:
 		return None
 
+# Function for getting device info data
+def get_device_info_data(decawave_peripheral):
+	bytes = read_decawave_characteristic(
+		decawave_peripheral,
+		DEVICE_INFO_CHARACTERISTIC_UUID)
+	data = parse_device_info_bytes(bytes)
+	return(data)
+
 # Function for parsing bytes from device info characteristic
 def parse_device_info_bytes(device_info_bytes):
 	device_info_data = bitstruct.unpack_dict(
@@ -163,6 +240,14 @@ def parse_device_info_bytes(device_info_bytes):
 			'unknown'],
 		device_info_bytes)
 	return device_info_data
+
+# Function for getting anchor list data
+def get_anchor_list_data(decawave_peripheral):
+	bytes = read_decawave_characteristic(
+		decawave_peripheral,
+		ANCHOR_LIST_CHARACTERISTIC_UUID)
+	data = parse_anchor_list_bytes(bytes)
+	return(data)
 
 # Function for parsing bytes from anchor list characteristic
 def parse_anchor_list_bytes(anchor_list_bytes):
@@ -181,6 +266,14 @@ def parse_anchor_list_bytes(anchor_list_bytes):
 	else:
 		return None
 
+# Function for getting update rate data
+def get_update_rate_data(decawave_peripheral):
+	bytes = read_decawave_characteristic(
+		decawave_peripheral,
+		TAG_UPDATE_RATE_CHARACTERISTIC_UUID)
+	data = parse_update_rate_bytes(bytes)
+	return(data)
+
 # Function for parsing bytes from update rate characteristic
 def parse_update_rate_bytes(update_rate_bytes):
 	update_rate_data = bitstruct.unpack_dict(
@@ -191,14 +284,8 @@ def parse_update_rate_bytes(update_rate_bytes):
 		update_rate_bytes)
 	return update_rate_data
 
-# Scan for BLE devices
-print('\nScanning for BLE devices')
-scanner = bluepy.btle.Scanner()
-scan_entries = scanner.scan()
-print('Finished scanning for BLE devices')
-
-# Filter for Decawave devices
-decawave_scan_entries = list(filter(is_decawave_scan_entry, scan_entries))
+# Scan for Decawave devices
+decawave_scan_entries = get_decawave_scan_entries()
 num_decawave_devices = len(decawave_scan_entries)
 print('\nFound {} Decawave devices'.format(num_decawave_devices))
 
@@ -225,78 +312,41 @@ for decawave_scan_entry in decawave_scan_entries:
 			'type_code': type_code,
 			'description': description,
 			'value': value})
-	# Connect to device
-	print('Connecting to device')
-	peripheral = bluepy.btle.Peripheral()
-	peripheral.connect(mac_address)
-	# Get services list
-	print('Getting services list')
-	services = list(peripheral.getServices())
-	services_information = []
-	for service in services:
-		service_uuid = service.uuid
-		# Get characteristics list
-		print('Getting characteristics list for service {}'.format(service_uuid))
-		characteristics = service.getCharacteristics()
-		characteristics_information = []
-		for characteristic in characteristics:
-			characteristic_uuid = characteristic.uuid
-			characteristics_information.append({
-				'characteristic_uuid': characteristic_uuid})
-		services_information.append({
-			'service_uuid': service_uuid,
-			'characteristics': characteristics_information})
-	# Get network node service
-	print('Getting network node service')
-	network_node_service = peripheral.getServiceByUUID(NETWORK_NODE_SERVICE_UUID)
+	# Connect to Decawave device
+	print('Connecting to Decawave device')
+	decawave_peripheral = get_decawave_peripheral(decawave_scan_entry)
 	# Get operation mode data
 	print('Getting operation mode data')
-	operation_mode_characteristic = network_node_service.getCharacteristics(OPERATION_MODE_CHARACTERISTIC_UUID)[0]
-	operation_mode_bytes = operation_mode_characteristic.read()
-	operation_mode_data = parse_operation_mode_bytes(operation_mode_bytes)
+	operation_mode_data = get_operation_mode_data(decawave_peripheral)
 	# Get operation mode data
 	print('Getting device info data')
-	device_info_characteristic = network_node_service.getCharacteristics(DEVICE_INFO_CHARACTERISTIC_UUID)[0]
-	device_info_bytes = device_info_characteristic.read()
-	device_info_data = parse_device_info_bytes(device_info_bytes)
+	device_info_data = get_device_info_data(decawave_peripheral)
 	# Get network ID
 	print('Getting network ID')
-	network_id_characteristic = network_node_service.getCharacteristics(NETWORK_ID_CHARACTERISTIC_UUID)[0]
-	network_id_bytes = network_id_characteristic.read()
-	network_id = parse_network_id_bytes(network_id_bytes)
+	network_id = get_network_id(decawave_peripheral)
 	# Get location data mode data
-	print('Getting location data mode data')
-	location_data_mode_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_MODE_CHARACTERISTIC_UUID)[0]
-	location_data_mode_bytes = location_data_mode_characteristic.read()
-	location_data_mode = parse_location_data_mode_bytes(location_data_mode_bytes)
+	print('Getting location data mode')
+	location_data_mode = get_location_data_mode(decawave_peripheral)
 	# Get location data
 	print('Getting location data')
-	location_data_characteristic = network_node_service.getCharacteristics(LOCATION_DATA_CHARACTERISTIC_UUID)[0]
-	location_data_bytes = location_data_characteristic.read()
-	location_data = parse_location_data_bytes(location_data_bytes)
+	location_data = get_location_data(decawave_peripheral)
 	# Get proxy positions data
 	print('Getting proxy positions data')
-	proxy_positions_characteristic = network_node_service.getCharacteristics(PROXY_POSITION_CHARACTERISTIC_UUID)[0]
-	proxy_positions_bytes = proxy_positions_characteristic.read()
-	proxy_positions_data = parse_proxy_positions_bytes(proxy_positions_bytes)
+	proxy_positions_data = get_proxy_positions_data(decawave_peripheral)
 	# Get anchor list data
 	if DEVICE_TYPE_NAMES[operation_mode_data['device_type']] == 'Anchor':
 		print('Getting anchor list data')
-		anchor_list_characteristic = network_node_service.getCharacteristics(ANCHOR_LIST_CHARACTERISTIC_UUID)[0]
-		anchor_list_bytes = anchor_list_characteristic.read()
-		anchor_list_data = parse_anchor_list_bytes(anchor_list_bytes)
+		anchor_list_data = get_anchor_list_data(decawave_peripheral)
 	else:
 		anchor_list_data = None
 	# Get anchor list data
 	if DEVICE_TYPE_NAMES[operation_mode_data['device_type']] == 'Tag':
 		print('Getting update rate data')
-		update_rate_characteristic = network_node_service.getCharacteristics(TAG_UPDATE_RATE_CHARACTERISTIC_UUID)[0]
-		update_rate_bytes = update_rate_characteristic.read()
-		update_rate_data = parse_update_rate_bytes(update_rate_bytes)
+		update_rate_data = get_update_rate_data(decawave_peripheral)
 	else:
 		update_rate_data = None
 	# Disconnect from device
-	peripheral.disconnect()
+	decawave_peripheral.disconnect()
 	# Populate device data
 	decawave_devices.append({
 		'mac_address': mac_address,
@@ -327,8 +377,7 @@ for decawave_scan_entry in decawave_scan_entries:
 		'proxy_positions_data': proxy_positions_data,
 		'anchor_list_data': anchor_list_data,
 		'update_rate_data': update_rate_data,
-		'scan_data': scan_data_information,
-		'services': services_information})
+		'scan_data': scan_data_information})
 
 # Write results to JSON file
 print('Saving results in {}'.format(json_output_path))
