@@ -6,6 +6,41 @@ import bitstruct
 # BLE advertising data type codes
 SHORT_LOCAL_NAME_TYPE_CODE = 8
 
+# Known Decawave services (from documentation)
+NETWORK_NODE_SERVICE_UUID = '680c21d9-c946-4c1f-9c11-baa1c21329e7'
+
+# Uknown Decawave services (found in scan)
+UNKNOWN_01_SERVICE_UUID = '00001801-0000-1000-8000-00805f9b34fb'
+UNKNOWN_02_SERVICE_UUID = '00001800-0000-1000-8000-00805f9b34fb'
+
+# Known Decawave characteristics for network node service (from documentation)
+OPERATION_MODE_CHARACTERISTIC_UUID = '3f0afd88-7770-46b0-b5e7-9fc099598964'
+NETWORK_ID_CHARACTERISTIC_UUID = '80f9d8bc-3bff-45bb-a181-2d6a37991208'
+LOCATION_DATA_MODE_CHARACTERISTIC_UUID = 'a02b947e-df97-4516-996a-1882521e0ead'
+LOCATION_DATA_CHARACTERISTIC_UUID = '003bbdf2-c634-4b3d-ab56-7ec889b89a37'
+PROXY_POSITIONS_CHARACTERISTIC_UUID = 'f4a67d7d-379d-4183-9c03-4b6ea5103291'
+DEVICE_INFO_CHARACTERISTIC_UUID = '1e63b1eb-d4ed-444e-af54-c1e965192501'
+STATISTICS_CHARACTERISTIC_UUID = '0eb2bc59-baf1-4c1c-8535-8a0204c69de5'
+FW_UPDATE_PUSH_CHARACTERISTIC_UUID = '5955aa10-e085-4030-8aa6-bdfac89ac32b'
+FW_UPDATE_POLL_CHARACTERISIC_UUID = '9eed0e27-09c0-4d1c-bd92-7c441daba850'
+DISCONNECT_CHARACTERISTIC_UUID = 'ed83b848-da03-4a0a-a2dc-8b401080e473'
+ANCHOR_PERSISTED_POSITION_CHARACTERISTIC_UUID = 'f0f26c9b-2c8c-49ac-ab60-fe03def1b40c'
+ANCHOR_CLUSTER_INFO_CHARACTERISTIC_UUID = '17b1613e-98f2-4436-bcde-23af17a10c72'
+ANCHOR_MAC_STATS_CHARACTERISTIC_UUID = '28d01d60-89de-4bfa-b6e9-651ba596232c'
+ANCHOR_LIST_CHARACTERISTIC_UUID = '5b10c428-af2f-486f-aee1-9dbd79b6bccb'
+TAG_UPDATE_RATE_CHARACTERISTIC_UUID = '7bd47f30-5602-4389-b069-8305731308b6'
+
+# Names of operation mode data values
+DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
+UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
+FW_VERSION_NAMES = ['1', '2']
+
+# Names of location data mode data values
+LOCATION_DATA_MODE_NAMES = [
+	'Position',
+	'Distances',
+	'Position and distances']
+
 # Function for retrieving Decawave scan entries
 def get_decawave_scan_entries():
 	scanner = bluepy.btle.Scanner()
@@ -35,30 +70,6 @@ def read_decawave_characteristic(decawave_peripheral, characteristic_uuid):
 def is_decawave_scan_entry(scan_entry):
 	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
 	return (short_local_name is not None and short_local_name.startswith('DW'))
-
-# Known Decawave services (from documentation)
-NETWORK_NODE_SERVICE_UUID = '680c21d9-c946-4c1f-9c11-baa1c21329e7'
-
-# Uknown Decawave services (found in scan)
-UNKNOWN_01_SERVICE_UUID = '00001801-0000-1000-8000-00805f9b34fb'
-UNKNOWN_02_SERVICE_UUID = '00001800-0000-1000-8000-00805f9b34fb'
-
-# Known Decawave characteristics for network node service (from documentation)
-OPERATION_MODE_CHARACTERISTIC_UUID = '3f0afd88-7770-46b0-b5e7-9fc099598964'
-NETWORK_ID_CHARACTERISTIC_UUID = '80f9d8bc-3bff-45bb-a181-2d6a37991208'
-LOCATION_DATA_MODE_CHARACTERISTIC_UUID = 'a02b947e-df97-4516-996a-1882521e0ead'
-LOCATION_DATA_CHARACTERISTIC_UUID = '003bbdf2-c634-4b3d-ab56-7ec889b89a37'
-PROXY_POSITIONS_CHARACTERISTIC_UUID = 'f4a67d7d-379d-4183-9c03-4b6ea5103291'
-DEVICE_INFO_CHARACTERISTIC_UUID = '1e63b1eb-d4ed-444e-af54-c1e965192501'
-STATISTICS_CHARACTERISTIC_UUID = '0eb2bc59-baf1-4c1c-8535-8a0204c69de5'
-FW_UPDATE_PUSH_CHARACTERISTIC_UUID = '5955aa10-e085-4030-8aa6-bdfac89ac32b'
-FW_UPDATE_POLL_CHARACTERISIC_UUID = '9eed0e27-09c0-4d1c-bd92-7c441daba850'
-DISCONNECT_CHARACTERISTIC_UUID = 'ed83b848-da03-4a0a-a2dc-8b401080e473'
-ANCHOR_PERSISTED_POSITION_CHARACTERISTIC_UUID = 'f0f26c9b-2c8c-49ac-ab60-fe03def1b40c'
-ANCHOR_CLUSTER_INFO_CHARACTERISTIC_UUID = '17b1613e-98f2-4436-bcde-23af17a10c72'
-ANCHOR_MAC_STATS_CHARACTERISTIC_UUID = '28d01d60-89de-4bfa-b6e9-651ba596232c'
-ANCHOR_LIST_CHARACTERISTIC_UUID = '5b10c428-af2f-486f-aee1-9dbd79b6bccb'
-TAG_UPDATE_RATE_CHARACTERISTIC_UUID = '7bd47f30-5602-4389-b069-8305731308b6'
 
 # Function for getting scan data
 def get_scan_data(decawave_scan_entry):
@@ -120,11 +131,6 @@ def parse_operation_mode_bytes(operation_mode_bytes):
 	operation_mode_data['fw_version_name'] = FW_VERSION_NAMES[operation_mode_data['fw_version']]
 	return operation_mode_data
 
-# Names of operation mode data values
-DEVICE_TYPE_NAMES = ['Tag', 'Anchor']
-UWB_MODE_NAMES = ['Off', 'Passive', 'Active']
-FW_VERSION_NAMES = ['1', '2']
-
 # Function for getting location data mode data
 def get_location_data_mode(decawave_peripheral):
 	bytes = read_decawave_characteristic(
@@ -141,12 +147,6 @@ def parse_location_data_mode_bytes(location_data_mode_bytes):
 		'location_data_mode': location_data_mode,
 		'location_data_mode_name': location_data_mode_name}
 	return location_data_mode_data
-
-# Names of location data mode data values
-LOCATION_DATA_MODE_NAMES = [
-	'Position',
-	'Distances',
-	'Position and distances']
 
 # Function for getting location data
 def get_location_data(decawave_peripheral):
