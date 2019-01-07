@@ -76,6 +76,33 @@ ANCHOR_MAC_STATS_CHARACTERISTIC_UUID = '28d01d60-89de-4bfa-b6e9-651ba596232c'
 ANCHOR_LIST_CHARACTERISTIC_UUID = '5b10c428-af2f-486f-aee1-9dbd79b6bccb'
 TAG_UPDATE_RATE_CHARACTERISTIC_UUID = '7bd47f30-5602-4389-b069-8305731308b6'
 
+# Function for getting scan data
+def get_scan_data(decawave_scan_entry):
+	advertising_data_tuples = decawave_scan_entry.getScanData()
+	advertising_data = []
+	for advertising_data_tuple in advertising_data_tuples:
+		type_code, description, value = advertising_data_tuple
+		advertising_data.append({
+			'type_code': type_code,
+			'description': description,
+			'value': value})
+	scan_data = {
+		'mac_address': decawave_scan_entry.addr,
+		'address_type': decawave_scan_entry.addrType,
+		'interface': decawave_scan_entry.iface,
+		'rssi': decawave_scan_entry.rssi,
+		'connectable': decawave_scan_entry.connectable,
+		'advertising_data': advertising_data}
+	return scan_data
+
+# Function for getting device name from scan data
+def get_device_name(scan_data):
+	device_name = None
+	for advertising_datum in scan_data['advertising_data']:
+		if advertising_datum['type_code'] == SHORT_LOCAL_NAME_TYPE_CODE:
+			device_name = advertising_datum['value']
+	return device_name
+
 # Data and functions for parsing network node service characteristics
 # (from documentation)
 
@@ -293,27 +320,12 @@ print('\nFound {} Decawave devices'.format(num_decawave_devices))
 print('\nGetting data from Decawave devices')
 decawave_devices = []
 for decawave_scan_entry in decawave_scan_entries:
-	mac_address = decawave_scan_entry.addr
-	addrType = decawave_scan_entry.addrType
-	iface = decawave_scan_entry.iface
-	rssi = decawave_scan_entry.rssi
-	connectable = decawave_scan_entry.connectable
-	print('\nGetting data for Decawave device {}'.format(mac_address))
-	# Get advertising data
-	print('Getting advertising data')
-	scan_data = decawave_scan_entry.getScanData()
-	scan_data_information = []
-	for scan_data_tuple in scan_data:
-		type_code, description, value = scan_data_tuple
-		if type_code == SHORT_LOCAL_NAME_TYPE_CODE:
-			device_name = value
-			print('Device name: {}'.format(device_name))
-		scan_data_information.append({
-			'type_code': type_code,
-			'description': description,
-			'value': value})
+	# Get scan data
+	print('\nGetting scan data')
+	scan_data = get_scan_data(decawave_scan_entry)
+	device_name = get_device_name(scan_data)
 	# Connect to Decawave device
-	print('Connecting to Decawave device')
+	print('Connecting to Decawave device {}'.format(device_name))
 	decawave_peripheral = get_decawave_peripheral(decawave_scan_entry)
 	# Get operation mode data
 	print('Getting operation mode data')
@@ -349,35 +361,16 @@ for decawave_scan_entry in decawave_scan_entries:
 	decawave_peripheral.disconnect()
 	# Populate device data
 	decawave_devices.append({
-		'mac_address': mac_address,
 		'device_name': device_name,
-		'addrType': addrType,
-		'iface': iface,
-		'rssi': rssi,
-		'connectable': connectable,
-		'device_type': operation_mode_data['device_type'],
-		'uwb_mode': operation_mode_data['uwb_mode'],
-		'fw_version': operation_mode_data['fw_version'],
-		'accelerometer_enable': operation_mode_data['accelerometer_enable'],
-		'led_enable': operation_mode_data['led_enable'],
-		'fw_update_enable': operation_mode_data['fw_update_enable'],
-		'initiator': operation_mode_data['initiator'],
-		'low_power_mode': operation_mode_data['low_power_mode'],
-		'location_engine': operation_mode_data['location_engine'],
-		'node_id': device_info_data['node_id'],
-		'hw_version': device_info_data['hw_version'],
-		'fw1_version': device_info_data['fw1_version'],
-		'fw2_version': device_info_data['fw2_version'],
-		'fw1_checksum': device_info_data['fw1_checksum'],
-		'fw2_checksum': device_info_data['fw2_checksum'],
-		'bridge': device_info_data['bridge'],
+		'scan_data': scan_data,
+		'operation_mode_data': operation_mode_data,
+		'device_info_data': device_info_data,
 		'network_id': network_id,
 		'location_data_mode': location_data_mode,
 		'location_data': location_data,
 		'proxy_positions_data': proxy_positions_data,
 		'anchor_list_data': anchor_list_data,
-		'update_rate_data': update_rate_data,
-		'scan_data': scan_data_information})
+		'update_rate_data': update_rate_data})
 
 # Write results to JSON file
 print('Saving results in {}'.format(json_output_path))
@@ -390,18 +383,13 @@ with open(text_output_path, 'w') as file:
 	file.write('{} Decawave devices found:\n'.format(num_decawave_devices))
 	for decawave_device in decawave_devices:
 		file.write('\nDevice name: {}\n'.format(decawave_device['device_name']))
-		file.write('RSSI: {} dB\n'.format(decawave_device['rssi']))
-		file.write('Device type: {}\n'.format(DEVICE_TYPE_NAMES[decawave_device['device_type']]))
-		file.write('Initiator: {}\n'.format(decawave_device['initiator']))
-		file.write('UWB mode: {}\n'.format(UWB_MODE_NAMES[decawave_device['uwb_mode']]))
+		file.write('RSSI: {} dB\n'.format(decawave_device['scan_data']['rssi']))
+		file.write('Device type: {}\n'.format(DEVICE_TYPE_NAMES[decawave_device['operation_mode_data']['device_type']]))
+		file.write('Initiator: {}\n'.format(decawave_device['operation_mode_data']['initiator']))
+		file.write('UWB mode: {}\n'.format(UWB_MODE_NAMES[decawave_device['operation_mode_data']['uwb_mode']]))
 		file.write('Network ID: {}\n'.format(decawave_device['network_id']))
-		file.write('Node ID: {:08X}\n'.format(decawave_device['node_id']))
-		file.write('Hardware version: {}\n'.format(decawave_device['hw_version']))
-		file.write('Firmware 1 version: {}\n'.format(decawave_device['fw1_version']))
-		file.write('Firmware 2 version: {}\n'.format(decawave_device['fw2_version']))
-		file.write('Firmware 1 checksum: {}\n'.format(decawave_device['fw1_checksum']))
-		file.write('Firmware 2 checksum: {}\n'.format(decawave_device['fw2_checksum']))
-		file.write('Bridge: {}\n'.format(decawave_device['bridge']))
+		file.write('Node ID: {:08X}\n'.format(decawave_device['device_info_data']['node_id']))
+		file.write('Bridge: {}\n'.format(decawave_device['device_info_data']['bridge']))
 		if decawave_device['location_data']['position_data'] is not None:
 			file.write('Position data:\n')
 			file.write('  X: {} mm\n'.format(decawave_device['location_data']['position_data']['x_position']))
