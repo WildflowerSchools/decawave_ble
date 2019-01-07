@@ -15,9 +15,10 @@ text_output_path = output_path_stem + '.txt'
 json_output_path = output_path_stem + '.json'
 
 # Scan for Decawave devices
+print('\nScanning for Decawave devices')
 decawave_scan_entries = get_decawave_scan_entries()
 num_decawave_devices = len(decawave_scan_entries)
-print('\nFound {} Decawave devices'.format(num_decawave_devices))
+print('Found {} Decawave devices'.format(num_decawave_devices))
 
 # Get data from Decawave devices
 print('\nGetting data from Decawave devices')

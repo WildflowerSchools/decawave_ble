@@ -8,16 +8,13 @@ SHORT_LOCAL_NAME_TYPE_CODE = 8
 
 # Function for retrieving Decawave scan entries
 def get_decawave_scan_entries():
-	print('\nScanning for BLE devices')
 	scanner = bluepy.btle.Scanner()
 	scan_entries = scanner.scan()
-	print('Finished scanning for BLE devices')
 	decawave_scan_entries = list(filter(is_decawave_scan_entry, scan_entries))
 	return decawave_scan_entries
 
 # Function for connecting to Decawave device
 def get_decawave_peripheral(decawave_scan_entry):
-	print('Connecting to device')
 	decawave_peripheral = bluepy.btle.Peripheral(decawave_scan_entry)
 	return decawave_peripheral
 
@@ -177,7 +174,6 @@ def parse_location_data_bytes(location_data_bytes):
 		position_data = None
 	if (location_data_content == 1 or location_data_content == 2):
 		distance_count = location_data_bytes[0]
-		print('Distance count: {}'.format(distance_count))
 		location_data_bytes = location_data_bytes[1:]
 		distance_data=[]
 		for distance_data_index in range(distance_count):
