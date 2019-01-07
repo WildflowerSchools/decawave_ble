@@ -77,7 +77,7 @@ for decawave_scan_entry in decawave_scan_entries:
 		'update_rate_data': update_rate_data})
 
 # Write results to JSON file
-print('Saving results in {}'.format(json_output_path))
+print('\nSaving results in {}'.format(json_output_path))
 with open(json_output_path, 'w') as file:
 	json.dump(decawave_devices, file, cls=CustomJSONEncoder)
 
