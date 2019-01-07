@@ -278,7 +278,7 @@ def parse_anchor_list_bytes(anchor_list_bytes):
 		anchor_list_data = []
 		for element_index in range(num_elements):
 			node_id_bytes = anchor_list_bytes[:2]
-			anchor_data_bytes = anchor_list_bytes[2:]
+			anchor_list_bytes = anchor_list_bytes[2:]
 			node_id = bitstruct.unpack(
 				'u16<',
 				node_id_bytes)[0]
