@@ -23,6 +23,8 @@ print('Found {} Decawave devices'.format(num_decawave_devices))
 # Get data from Decawave devices
 print('\nGetting data from Decawave devices')
 decawave_devices = []
+anchor_scan_entries = []
+tag_scan_entries = []
 for decawave_scan_entry in decawave_scan_entries:
 	# Get scan data
 	print('\nGetting scan data')
@@ -34,7 +36,11 @@ for decawave_scan_entry in decawave_scan_entries:
 	# Get operation mode data
 	print('Getting operation mode data')
 	operation_mode_data = get_operation_mode_data(decawave_peripheral)
-	# Get operation mode data
+	if operation_mode_data['device_type_name'] == 'Anchor':
+		anchor_scan_entries.append(decawave_scan_entry)
+	if operation_mode_data['device_type_name'] == 'Tag':
+		tag_scan_entries.append(decawave_scan_entry)
+	# Get device info data
 	print('Getting device info data')
 	device_info_data = get_device_info_data(decawave_peripheral)
 	# Get network ID
@@ -123,3 +129,51 @@ with open(text_output_path, 'w') as file:
 		if decawave_device['update_rate_data'] is not None:
 			file.write('Moving update rate (ms): {}\n'.format(decawave_device['update_rate_data']['moving_update_rate']))
 			file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
+
+# Write data to Decawave devices
+print('\nWriting data to Decawave devices')
+test_anchor_scan_entry = anchor_scan_entries[0]
+scan_data = get_scan_data(test_anchor_scan_entry)
+device_name = get_device_name(scan_data)
+# Connect to Decawave device
+print('Connecting to Decawave device {}'.format(device_name))
+decawave_peripheral = get_decawave_peripheral(test_anchor_scan_entry)
+# Get location data
+print('Getting location data')
+location_data_before = get_location_data(decawave_peripheral)
+# Print location data
+print('Position data:')
+print('  X: {} mm'.format(location_data_before['position_data']['x_position']))
+print('  Y: {} mm'.format(location_data_before['position_data']['y_position']))
+print('  Z: {} mm'.format(location_data_before['position_data']['z_position']))
+print('  Quality: {}'.format(location_data_before['position_data']['quality']))
+# Write persisted position data
+print('Writing new persisted position data')
+persisted_position_data = {
+	'x_position': 100,
+	'y_position': 200,
+	'z_position': 300,
+	'quality': 100}
+write_persisted_position_data(decawave_peripheral, persisted_position_data)
+# Get location data
+print('Getting location data')
+location_data_after = get_location_data(decawave_peripheral)
+# Print location data
+print('Position data:')
+print('  X: {} mm'.format(location_data_after['position_data']['x_position']))
+print('  Y: {} mm'.format(location_data_after['position_data']['y_position']))
+print('  Z: {} mm'.format(location_data_after['position_data']['z_position']))
+print('  Quality: {}'.format(location_data_after['position_data']['quality']))
+# Write persisted position data
+print('Restoring persisted position data')
+persisted_position_data = location_data_before['position_data']
+write_persisted_position_data(decawave_peripheral, persisted_position_data)
+# Get location data
+print('Getting location data')
+location_data_restored = get_location_data(decawave_peripheral)
+# Print location data
+print('Position data:')
+print('  X: {} mm'.format(location_data_restored['position_data']['x_position']))
+print('  Y: {} mm'.format(location_data_restored['position_data']['y_position']))
+print('  Z: {} mm'.format(location_data_restored['position_data']['z_position']))
+print('  Quality: {}'.format(location_data_restored['position_data']['quality']))

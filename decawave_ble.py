@@ -66,6 +66,13 @@ def read_decawave_characteristic(decawave_peripheral, characteristic_uuid):
 	bytes = characteristic.read()
 	return(bytes)
 
+# Function for writing characteristic to Decawave network node service
+# (identified by UUID)
+def write_decawave_characteristic(decawave_peripheral, characteristic_uuid, bytes):
+	decawave_network_node_service = get_decawave_network_node_service(decawave_peripheral)
+	characteristic = decawave_network_node_service.getCharacteristics(characteristic_uuid)[0]
+	characteristic.write(bytes)
+
 # Function for identifying Decawave devices from advertising data
 def is_decawave_scan_entry(scan_entry):
 	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
@@ -300,3 +307,20 @@ def parse_update_rate_bytes(update_rate_bytes):
 			'stationary_update_rate'],
 		update_rate_bytes)
 	return update_rate_data
+
+# Function for packing bytes for persisted position characteristic
+def pack_persisted_position_bytes(persisted_position_data):
+	persisted_position_bytes = bitstruct.pack_dict(
+		's32s32s32u8<',
+		['x_position', 'y_position', 'z_position', 'quality'],
+		persisted_position_data)
+	return persisted_position_bytes
+
+# Function for writing persisted_position data
+def write_persisted_position_data(decawave_peripheral, data):
+	bytes = pack_persisted_position_bytes(data)
+	write_decawave_characteristic(
+		decawave_peripheral,
+		ANCHOR_PERSISTED_POSITION_CHARACTERISTIC_UUID,
+		bytes)
+
