@@ -265,5 +265,40 @@ print('  Low power mode: {}'.format(operation_mode_data_restored['low_power_mode
 print('  Location engine: {}'.format(operation_mode_data_restored['location_engine']))
 print('  Reserved (2): {}'.format(operation_mode_data_restored['reserved_02']))
 
+# Get update rate data
+print('\nGetting update rate data')
+update_rate_data_before = get_update_rate_data(decawave_peripheral)
+# Print location data
+print('Update rate data:')
+print('  Moving update rate: {}'.format(update_rate_data_before['moving_update_rate']))
+print('  Stationary update rate: {}'.format(update_rate_data_before['stationary_update_rate']))
+
+# Write new update rate data
+print('\nWriting new update rate data')
+update_rate_data = {
+	'moving_update_rate': 300,
+	'stationary_update_rate': 400}
+write_update_rate_data(decawave_peripheral, update_rate_data)
+
+# Get update rate data
+print('\nGetting update rate data')
+update_rate_data_after = get_update_rate_data(decawave_peripheral)
+# Print location data
+print('Update rate data:')
+print('  Moving update rate: {}'.format(update_rate_data_after['moving_update_rate']))
+print('  Stationary update rate: {}'.format(update_rate_data_after['stationary_update_rate']))
+
+# Restore update rate data
+print('\nRestoring update rate data')
+write_update_rate_data(decawave_peripheral, update_rate_data_before)
+
+# Get update rate data
+print('\nGetting update rate data')
+update_rate_data_restored = get_update_rate_data(decawave_peripheral)
+# Print location data
+print('Update rate data:')
+print('  Moving update rate: {}'.format(update_rate_data_restored['moving_update_rate']))
+print('  Stationary update rate: {}'.format(update_rate_data_restored['stationary_update_rate']))
+
 # Disconnect from device
 decawave_peripheral.disconnect()

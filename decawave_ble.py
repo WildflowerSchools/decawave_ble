@@ -146,7 +146,7 @@ def write_operation_mode_data(decawave_peripheral, data):
 		OPERATION_MODE_CHARACTERISTIC_UUID,
 		bytes)
 
-# Function for packing bytes for persisted position characteristic
+# Function for packing bytes for operting mode characteristic
 def pack_operation_mode_bytes(operation_mode_data):
 	operation_mode_bytes = bitstruct.pack_dict(
 		'u1u2u1b1b1b1b1b1b1b1u4',
@@ -334,6 +334,24 @@ def parse_update_rate_bytes(update_rate_bytes):
 			'stationary_update_rate'],
 		update_rate_bytes)
 	return update_rate_data
+
+# Function for writing update rate data
+def write_update_rate_data(decawave_peripheral, data):
+	bytes = pack_update_rate_bytes(data)
+	write_decawave_characteristic(
+		decawave_peripheral,
+		TAG_UPDATE_RATE_CHARACTERISTIC_UUID,
+		bytes)
+
+# Function for packing bytes for update rate characteristic
+def pack_update_rate_bytes(update_rate_data):
+	update_rate_bytes = bitstruct.pack_dict(
+		'u32u32<',
+		[
+			'moving_update_rate',
+			'stationary_update_rate'],
+		update_rate_data)
+	return update_rate_bytes
 
 # Function for writing persisted position data
 def write_persisted_position_data(decawave_peripheral, data):
