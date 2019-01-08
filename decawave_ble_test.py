@@ -131,15 +131,18 @@ with open(text_output_path, 'w') as file:
 			file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
 
 # Write data to Decawave devices
+
 print('\nWriting data to Decawave devices')
 test_anchor_scan_entry = anchor_scan_entries[0]
 scan_data = get_scan_data(test_anchor_scan_entry)
 device_name = get_device_name(scan_data)
+
 # Connect to Decawave device
-print('Connecting to Decawave device {}'.format(device_name))
+print('\nConnecting to Decawave device {}'.format(device_name))
 decawave_peripheral = get_decawave_peripheral(test_anchor_scan_entry)
+
 # Get location data
-print('Getting location data')
+print('\nGetting location data')
 location_data_before = get_location_data(decawave_peripheral)
 # Print location data
 print('Position data:')
@@ -147,16 +150,18 @@ print('  X: {} mm'.format(location_data_before['position_data']['x_position']))
 print('  Y: {} mm'.format(location_data_before['position_data']['y_position']))
 print('  Z: {} mm'.format(location_data_before['position_data']['z_position']))
 print('  Quality: {}'.format(location_data_before['position_data']['quality']))
+
 # Write persisted position data
-print('Writing new persisted position data')
+print('\nWriting new persisted position data')
 persisted_position_data = {
 	'x_position': 100,
 	'y_position': 200,
 	'z_position': 300,
 	'quality': 100}
 write_persisted_position_data(decawave_peripheral, persisted_position_data)
+
 # Get location data
-print('Getting location data')
+print('\nGetting location data')
 location_data_after = get_location_data(decawave_peripheral)
 # Print location data
 print('Position data:')
@@ -164,12 +169,14 @@ print('  X: {} mm'.format(location_data_after['position_data']['x_position']))
 print('  Y: {} mm'.format(location_data_after['position_data']['y_position']))
 print('  Z: {} mm'.format(location_data_after['position_data']['z_position']))
 print('  Quality: {}'.format(location_data_after['position_data']['quality']))
+
 # Write persisted position data
-print('Restoring persisted position data')
+print('\nRestoring persisted position data')
 persisted_position_data = location_data_before['position_data']
 write_persisted_position_data(decawave_peripheral, persisted_position_data)
+
 # Get location data
-print('Getting location data')
+print('\nGetting location data')
 location_data_restored = get_location_data(decawave_peripheral)
 # Print location data
 print('Position data:')
@@ -177,3 +184,86 @@ print('  X: {} mm'.format(location_data_restored['position_data']['x_position'])
 print('  Y: {} mm'.format(location_data_restored['position_data']['y_position']))
 print('  Z: {} mm'.format(location_data_restored['position_data']['z_position']))
 print('  Quality: {}'.format(location_data_restored['position_data']['quality']))
+
+# Get operation mode data
+print('\nGetting operation mode data')
+operation_mode_data_before = get_operation_mode_data(decawave_peripheral)
+# Print location data
+print('Operation mode data:')
+print('  Device type: {}'.format(operation_mode_data_before['device_type']))
+print('  Device type name: {}'.format(operation_mode_data_before['device_type_name']))
+print('  UWB mode: {}'.format(operation_mode_data_before['uwb_mode']))
+print('  UWB mode name: {}'.format(operation_mode_data_before['uwb_mode_name']))
+print('  FW version: {}'.format(operation_mode_data_before['fw_version']))
+print('  FW version name: {}'.format(operation_mode_data_before['fw_version_name']))
+print('  Accelerometer enable: {}'.format(operation_mode_data_before['accelerometer_enable']))
+print('  LED enable: {}'.format(operation_mode_data_before['led_enable']))
+print('  FW update enable: {}'.format(operation_mode_data_before['fw_update_enable']))
+print('  Reserved (1): {}'.format(operation_mode_data_before['reserved_01']))
+print('  Initiator: {}'.format(operation_mode_data_before['initiator']))
+print('  Low power mode: {}'.format(operation_mode_data_before['low_power_mode']))
+print('  Location engine: {}'.format(operation_mode_data_before['location_engine']))
+print('  Reserved (2): {}'.format(operation_mode_data_before['reserved_02']))
+
+# Write new operation mode data
+print('\nWriting new operation mode data')
+operation_mode_data = {
+	'device_type': 0,
+	'uwb_mode': 1,
+	'fw_version': operation_mode_data_before['fw_version'],
+	'accelerometer_enable': operation_mode_data_before['accelerometer_enable'],
+	'led_enable': operation_mode_data_before['led_enable'],
+	'fw_update_enable': operation_mode_data_before['fw_update_enable'],
+	'reserved_01': operation_mode_data_before['reserved_01'],
+	'initiator': False,
+	'low_power_mode': operation_mode_data_before['low_power_mode'],
+	'location_engine': operation_mode_data_before['location_engine'],
+	'reserved_02': operation_mode_data_before['location_engine']}
+write_operation_mode_data(decawave_peripheral, operation_mode_data)
+
+# Get operation mode data
+print('\nGetting operation mode data')
+operation_mode_data_after = get_operation_mode_data(decawave_peripheral)
+# Print location data
+print('Operation mode data:')
+print('  Device type: {}'.format(operation_mode_data_after['device_type']))
+print('  Device type name: {}'.format(operation_mode_data_after['device_type_name']))
+print('  UWB mode: {}'.format(operation_mode_data_after['uwb_mode']))
+print('  UWB mode name: {}'.format(operation_mode_data_after['uwb_mode_name']))
+print('  FW version: {}'.format(operation_mode_data_after['fw_version']))
+print('  FW version name: {}'.format(operation_mode_data_after['fw_version_name']))
+print('  Accelerometer enable: {}'.format(operation_mode_data_after['accelerometer_enable']))
+print('  LED enable: {}'.format(operation_mode_data_after['led_enable']))
+print('  FW update enable: {}'.format(operation_mode_data_after['fw_update_enable']))
+print('  Reserved (1): {}'.format(operation_mode_data_after['reserved_01']))
+print('  Initiator: {}'.format(operation_mode_data_after['initiator']))
+print('  Low power mode: {}'.format(operation_mode_data_after['low_power_mode']))
+print('  Location engine: {}'.format(operation_mode_data_after['location_engine']))
+print('  Reserved (2): {}'.format(operation_mode_data_after['reserved_02']))
+
+# Restoring operation mode data
+print('\nRestoring operation mode data')
+write_operation_mode_data(decawave_peripheral, operation_mode_data_before)
+
+# Get operation mode data
+print('\nGetting operation mode data')
+operation_mode_data_restored = get_operation_mode_data(decawave_peripheral)
+# Print location data
+print('Operation mode data:')
+print('  Device type: {}'.format(operation_mode_data_restored['device_type']))
+print('  Device type name: {}'.format(operation_mode_data_restored['device_type_name']))
+print('  UWB mode: {}'.format(operation_mode_data_restored['uwb_mode']))
+print('  UWB mode name: {}'.format(operation_mode_data_restored['uwb_mode_name']))
+print('  FW version: {}'.format(operation_mode_data_restored['fw_version']))
+print('  FW version name: {}'.format(operation_mode_data_restored['fw_version_name']))
+print('  Accelerometer enable: {}'.format(operation_mode_data_restored['accelerometer_enable']))
+print('  LED enable: {}'.format(operation_mode_data_restored['led_enable']))
+print('  FW update enable: {}'.format(operation_mode_data_restored['fw_update_enable']))
+print('  Reserved (1): {}'.format(operation_mode_data_restored['reserved_01']))
+print('  Initiator: {}'.format(operation_mode_data_restored['initiator']))
+print('  Low power mode: {}'.format(operation_mode_data_restored['low_power_mode']))
+print('  Location engine: {}'.format(operation_mode_data_restored['location_engine']))
+print('  Reserved (2): {}'.format(operation_mode_data_restored['reserved_02']))
+
+# Disconnect from device
+decawave_peripheral.disconnect()

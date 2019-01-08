@@ -138,6 +138,33 @@ def parse_operation_mode_bytes(operation_mode_bytes):
 	operation_mode_data['fw_version_name'] = FW_VERSION_NAMES[operation_mode_data['fw_version']]
 	return operation_mode_data
 
+# Function for writing operation mode data
+def write_operation_mode_data(decawave_peripheral, data):
+	bytes = pack_operation_mode_bytes(data)
+	write_decawave_characteristic(
+		decawave_peripheral,
+		OPERATION_MODE_CHARACTERISTIC_UUID,
+		bytes)
+
+# Function for packing bytes for persisted position characteristic
+def pack_operation_mode_bytes(operation_mode_data):
+	operation_mode_bytes = bitstruct.pack_dict(
+		'u1u2u1b1b1b1b1b1b1b1u4',
+		[
+			'device_type',
+			'uwb_mode',
+			'fw_version',
+			'accelerometer_enable',
+			'led_enable',
+			'fw_update_enable',
+			'reserved_01',
+			'initiator',
+			'low_power_mode',
+			'location_engine',
+			'reserved_02'],
+		operation_mode_data)
+	return operation_mode_bytes
+
 # Function for getting location data mode data
 def get_location_data_mode(decawave_peripheral):
 	bytes = read_decawave_characteristic(
@@ -308,6 +335,14 @@ def parse_update_rate_bytes(update_rate_bytes):
 		update_rate_bytes)
 	return update_rate_data
 
+# Function for writing persisted position data
+def write_persisted_position_data(decawave_peripheral, data):
+	bytes = pack_persisted_position_bytes(data)
+	write_decawave_characteristic(
+		decawave_peripheral,
+		ANCHOR_PERSISTED_POSITION_CHARACTERISTIC_UUID,
+		bytes)
+
 # Function for packing bytes for persisted position characteristic
 def pack_persisted_position_bytes(persisted_position_data):
 	persisted_position_bytes = bitstruct.pack_dict(
@@ -316,11 +351,4 @@ def pack_persisted_position_bytes(persisted_position_data):
 		persisted_position_data)
 	return persisted_position_bytes
 
-# Function for writing persisted_position data
-def write_persisted_position_data(decawave_peripheral, data):
-	bytes = pack_persisted_position_bytes(data)
-	write_decawave_characteristic(
-		decawave_peripheral,
-		ANCHOR_PERSISTED_POSITION_CHARACTERISTIC_UUID,
-		bytes)
 
