@@ -48,7 +48,7 @@ for decawave_scan_entry in decawave_scan_entries:
 	network_id = get_network_id(decawave_peripheral)
 	# Get location data mode data
 	print('Getting location data mode')
-	location_data_mode = get_location_data_mode(decawave_peripheral)
+	location_data_mode_data = get_location_data_mode(decawave_peripheral)
 	# Get location data
 	print('Getting location data')
 	location_data = get_location_data(decawave_peripheral)
@@ -77,7 +77,7 @@ for decawave_scan_entry in decawave_scan_entries:
 		'operation_mode_data': operation_mode_data,
 		'device_info_data': device_info_data,
 		'network_id': network_id,
-		'location_data_mode': location_data_mode,
+		'location_data_mode_data': location_data_mode_data,
 		'location_data': location_data,
 		'proxy_positions_data': proxy_positions_data,
 		'anchor_list_data': anchor_list_data,
@@ -101,6 +101,9 @@ with open(text_output_path, 'w') as file:
 		file.write('Network ID: {}\n'.format(decawave_device['network_id']))
 		file.write('Node ID: {:08X}\n'.format(decawave_device['device_info_data']['node_id']))
 		file.write('Bridge: {}\n'.format(decawave_device['device_info_data']['bridge']))
+		file.write('Location engine: {}\n'.format(decawave_device['operation_mode_data']['location_engine']))
+		file.write('Location data mode name: {}\n'.format(decawave_device['location_data_mode_data']['location_data_mode_name']))
+		file.write('Location data content name: {}\n'.format(decawave_device['location_data']['location_data_content_name']))
 		if decawave_device['location_data']['position_data'] is not None:
 			file.write('Position data:\n')
 			file.write('  X: {} mm\n'.format(decawave_device['location_data']['position_data']['x_position']))

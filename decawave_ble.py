@@ -41,6 +41,12 @@ LOCATION_DATA_MODE_NAMES = [
 	'Distances',
 	'Position and distances']
 
+# Names of location data content values
+LOCATION_DATA_CONTENT_NAMES = [
+	'Position only',
+	'Distances',
+	'Position and distances']
+
 # Function for retrieving Decawave scan entries
 def get_decawave_scan_entries():
 	scanner = bluepy.btle.Scanner()
@@ -195,8 +201,10 @@ def parse_location_data_bytes(location_data_bytes):
 	if len(location_data_bytes) > 0:
 		location_data_content = location_data_bytes[0]
 		location_data_bytes = location_data_bytes[1:]
+		location_data_content_name = LOCATION_DATA_CONTENT_NAMES[location_data_content]
 	else:
 		location_data_content = None
+		location_data_content_name = None
 	if (location_data_content == 0 or location_data_content == 2):
 		position_bytes = location_data_bytes[:13]
 		location_data_bytes = location_data_bytes[13:]
@@ -221,6 +229,8 @@ def parse_location_data_bytes(location_data_bytes):
 	else:
 		distance_data = None
 	return {
+		'location_data_content': location_data_content,
+		'location_data_content_name': location_data_content_name,
 		'position_data': position_data,
 		'distance_data': distance_data}
 
