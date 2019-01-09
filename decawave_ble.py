@@ -149,6 +149,44 @@ def get_data(mac_address):
 		'update_rate_data': update_rate_data}
 	return(data)
 
+# Functions for setting all configuration parameters
+def set_config(
+	mac_address,
+	device_type_name = None,
+	uwb_mode_name = None,
+	accelerometer_enable = None,
+	led_enable = None,
+	initiator = None,
+	low_power_mode = None,
+	location_engine = None,
+	moving_update_rate = None,
+	stationary_update_rate = None,
+	x_position = None,
+	y_position = None,
+	z_position = None,
+	quality = None):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
+	set_operation_mode_to_peripheral(
+		decawave_peripheral,
+		device_type_name,
+		uwb_mode_name,
+		accelerometer_enable,
+		led_enable,
+		initiator,
+		low_power_mode,
+		location_engine)
+	set_update_rate_to_peripheral(
+		decawave_peripheral,
+		moving_update_rate,
+		stationary_update_rate)
+	set_persisted_position_to_peripheral(
+		decawave_peripheral,
+		x_position,
+		y_position,
+		z_position,
+		quality)
+	decawave_peripheral.disconnect()
+
 # Functions for getting operation mode data
 def get_operation_mode_data(mac_address):
 	decawave_peripheral = get_decawave_peripheral(mac_address)

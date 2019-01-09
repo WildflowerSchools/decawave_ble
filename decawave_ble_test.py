@@ -135,26 +135,16 @@ print('Update rate data (before change):')
 print('  Moving update rate: {}'.format(update_rate_data_before['moving_update_rate']))
 print('  Stationary update rate: {}'.format(update_rate_data_before['stationary_update_rate']))
 
-# Write new persisted position data
-print('\nWriting new persisted position data')
-set_persisted_position(
+# Write new data
+print('\nWriting new data')
+set_config(
 	decawave_scan_entry,
 	x_position = 100,
 	y_position = 200,
-	z_position = 300)
-
-# Write new operation mode data
-print('Writing new operation mode data')
-set_operation_mode(
-	decawave_scan_entry,
+	z_position = 300,
 	device_type_name = 'Tag',
 	uwb_mode_name = 'Passive',
-	initiator = False)
-
-# Write new update rate data
-print('Writing new update rate data')
-set_update_rate(
-	decawave_scan_entry,
+	initiator = False,
 	moving_update_rate = 300,
 	stationary_update_rate = 400)
 
