@@ -106,12 +106,11 @@ print('  Quality: {}'.format(location_data_before['position_data']['quality']))
 
 # Write persisted position data
 print('\nWriting new persisted position data')
-persisted_position_data = {
-	'x_position': 100,
-	'y_position': 200,
-	'z_position': 300,
-	'quality': 100}
-write_persisted_position_data(decawave_scan_entry, persisted_position_data)
+set_persisted_position(
+	decawave_scan_entry,
+	x_position = 100,
+	y_position = 200,
+	z_position = 300)
 
 # Get location data
 print('\nGetting location data')
@@ -124,7 +123,7 @@ print('  Y: {} mm'.format(location_data_after['position_data']['y_position']))
 print('  Z: {} mm'.format(location_data_after['position_data']['z_position']))
 print('  Quality: {}'.format(location_data_after['position_data']['quality']))
 
-# Write persisted position data
+# Restore persisted position data
 print('\nRestoring persisted position data')
 persisted_position_data = location_data_before['position_data']
 write_persisted_position_data(decawave_scan_entry, persisted_position_data)

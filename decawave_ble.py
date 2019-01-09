@@ -523,6 +523,41 @@ def pack_update_rate_bytes(update_rate_data):
 	return update_rate_bytes
 
 # Functions for writing persisted position data
+def set_persisted_position(
+	mac_address,
+	x_position = None,
+	y_position = None,
+	z_position = None,
+	quality = None):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
+	set_persisted_position_to_peripheral(
+		decawave_peripheral,
+		x_position,
+		y_position,
+		z_position,
+		quality)
+	decawave_peripheral.disconnect()
+
+def set_persisted_position_to_peripheral(
+	decawave_peripheral,
+	x_position = None,
+	y_position = None,
+	z_position = None,
+	quality = None):
+	location_data = get_location_data_from_peripheral(decawave_peripheral)
+	persisted_position_data = location_data['position_data']
+	if x_position is not None:
+		persisted_position_data['x_position'] = x_position
+	if y_position is not None:
+		persisted_position_data['y_position'] = y_position
+	if z_position is not None:
+		persisted_position_data['z_position'] = z_position
+	if quality is not None:
+		persisted_position_data['quality'] = quality
+	write_persisted_position_data_to_peripheral(
+		decawave_peripheral,
+		persisted_position_data)
+
 def write_persisted_position_data(mac_address, data):
 	decawave_peripheral = get_decawave_peripheral(mac_address)
 	write_persisted_position_data_to_peripheral(decawave_peripheral, data)
