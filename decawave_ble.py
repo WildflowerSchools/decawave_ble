@@ -61,8 +61,8 @@ def get_decawave_scan_entries():
 	return decawave_scan_entries
 
 # Function for connecting to Decawave device
-def get_decawave_peripheral(decawave_scan_entry):
-	decawave_peripheral = bluepy.btle.Peripheral(decawave_scan_entry)
+def get_decawave_peripheral(mac_address):
+	decawave_peripheral = bluepy.btle.Peripheral(mac_address)
 	return decawave_peripheral
 
 # Function for connecting to Decawave network node service
@@ -121,11 +121,13 @@ def get_device_name(scan_data):
 # (from documentation)
 
 # Function for getting operation mode data
-def get_operation_mode_data(decawave_peripheral):
+def get_operation_mode_data(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		OPERATION_MODE_CHARACTERISTIC_UUID)
 	data = parse_operation_mode_bytes(bytes)
+	decawave_peripheral.disconnect()
 	return(data)
 
 # Function for parsing bytes from operation mode characteristic
@@ -151,12 +153,14 @@ def parse_operation_mode_bytes(operation_mode_bytes):
 	return operation_mode_data
 
 # Function for writing operation mode data
-def write_operation_mode_data(decawave_peripheral, data):
+def write_operation_mode_data(mac_address, data):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = pack_operation_mode_bytes(data)
 	write_decawave_characteristic(
 		decawave_peripheral,
 		OPERATION_MODE_CHARACTERISTIC_UUID,
 		bytes)
+	decawave_peripheral.disconnect()
 
 # Function for packing bytes for operting mode characteristic
 def pack_operation_mode_bytes(operation_mode_data):
@@ -178,11 +182,13 @@ def pack_operation_mode_bytes(operation_mode_data):
 	return operation_mode_bytes
 
 # Function for getting location data mode data
-def get_location_data_mode_data(decawave_peripheral):
+def get_location_data_mode_data(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		LOCATION_DATA_MODE_CHARACTERISTIC_UUID)
 	data = parse_location_data_mode_bytes(bytes)
+	decawave_peripheral.disconnect()
 	return(data)
 
 # Function for parsing bytes from location data mode characteristic
@@ -195,11 +201,13 @@ def parse_location_data_mode_bytes(location_data_mode_bytes):
 	return location_data_mode_data
 
 # Function for getting location data
-def get_location_data(decawave_peripheral):
+def get_location_data(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		LOCATION_DATA_CHARACTERISTIC_UUID)
 	data = parse_location_data_bytes(bytes)
+	decawave_peripheral.disconnect()
 	return(data)
 
 # Function for parsing bytes from location data characteristic
@@ -241,11 +249,13 @@ def parse_location_data_bytes(location_data_bytes):
 		'distance_data': distance_data}
 
 # Function for getting network ID
-def get_network_id(decawave_peripheral):
+def get_network_id(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		NETWORK_ID_CHARACTERISTIC_UUID)
 	data = parse_network_id_bytes(bytes)
+	decawave_peripheral.disconnect()
 	return(data)
 
 # Function for parsing bytes from network ID characteristic
@@ -259,11 +269,13 @@ def parse_network_id_bytes(network_id_bytes):
 		return None
 
 # Function for getting proxy positions data
-def get_proxy_positions_data(decawave_peripheral):
+def get_proxy_positions_data(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		PROXY_POSITIONS_CHARACTERISTIC_UUID)
 	data = parse_proxy_positions_bytes(bytes)
+	decawave_peripheral.disconnect()
 	return(data)
 
 # Function for parsing bytes from proxy positions characteristic
@@ -285,11 +297,13 @@ def parse_proxy_positions_bytes(proxy_positions_bytes):
 		return None
 
 # Function for getting device info data
-def get_device_info_data(decawave_peripheral):
+def get_device_info_data(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		DEVICE_INFO_CHARACTERISTIC_UUID)
 	data = parse_device_info_bytes(bytes)
+	decawave_peripheral.disconnect()
 	return(data)
 
 # Function for parsing bytes from device info characteristic
@@ -309,11 +323,13 @@ def parse_device_info_bytes(device_info_bytes):
 	return device_info_data
 
 # Function for getting anchor list data
-def get_anchor_list_data(decawave_peripheral):
+def get_anchor_list_data(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		ANCHOR_LIST_CHARACTERISTIC_UUID)
 	data = parse_anchor_list_bytes(bytes)
+	decawave_peripheral.disconnect()
 	return(data)
 
 # Function for parsing bytes from anchor list characteristic
@@ -334,11 +350,13 @@ def parse_anchor_list_bytes(anchor_list_bytes):
 		return None
 
 # Function for getting update rate data
-def get_update_rate_data(decawave_peripheral):
+def get_update_rate_data(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		TAG_UPDATE_RATE_CHARACTERISTIC_UUID)
 	data = parse_update_rate_bytes(bytes)
+	decawave_peripheral.disconnect()
 	return(data)
 
 # Function for parsing bytes from update rate characteristic
@@ -352,12 +370,14 @@ def parse_update_rate_bytes(update_rate_bytes):
 	return update_rate_data
 
 # Function for writing update rate data
-def write_update_rate_data(decawave_peripheral, data):
+def write_update_rate_data(mac_address, data):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = pack_update_rate_bytes(data)
 	write_decawave_characteristic(
 		decawave_peripheral,
 		TAG_UPDATE_RATE_CHARACTERISTIC_UUID,
 		bytes)
+	decawave_peripheral.disconnect()
 
 # Function for packing bytes for update rate characteristic
 def pack_update_rate_bytes(update_rate_data):
@@ -370,12 +390,14 @@ def pack_update_rate_bytes(update_rate_data):
 	return update_rate_bytes
 
 # Function for writing persisted position data
-def write_persisted_position_data(decawave_peripheral, data):
+def write_persisted_position_data(mac_address, data):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
 	bytes = pack_persisted_position_bytes(data)
 	write_decawave_characteristic(
 		decawave_peripheral,
 		ANCHOR_PERSISTED_POSITION_CHARACTERISTIC_UUID,
 		bytes)
+	decawave_peripheral.disconnect()
 
 # Function for packing bytes for persisted position characteristic
 def pack_persisted_position_bytes(persisted_position_data):
