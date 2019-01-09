@@ -87,64 +87,34 @@ with open(text_output_path, 'w') as file:
 			file.write('Moving update rate (ms): {}\n'.format(decawave_device['update_rate_data']['moving_update_rate']))
 			file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
 
-# Write data to Decawave devices
-print('\nWriting data to Decawave devices')
+# Write data to Decawave device
+print('\nWriting data to Decawave device')
 decawave_scan_entry = anchor_scan_entries[0]
 scan_data = get_scan_data(decawave_scan_entry)
 device_name = get_device_name(scan_data)
+print('Chosen device: {}'.format(device_name))
 
 # Get location data
-print('\nGetting location data')
+print('\nGetting location data (before change)')
 location_data_before = get_location_data(decawave_scan_entry)
 
-# Print location data
-print('Position data:')
+# Get operation mode data
+print('Getting operation mode data (before change)')
+operation_mode_data_before = get_operation_mode_data(decawave_scan_entry)
+
+# Get update rate data
+print('Getting update rate data (before change)')
+update_rate_data_before = get_update_rate_data(decawave_scan_entry)
+
+# Print location data (before)
+print('\nPosition data (before change):')
 print('  X: {} mm'.format(location_data_before['position_data']['x_position']))
 print('  Y: {} mm'.format(location_data_before['position_data']['y_position']))
 print('  Z: {} mm'.format(location_data_before['position_data']['z_position']))
 print('  Quality: {}'.format(location_data_before['position_data']['quality']))
 
-# Write persisted position data
-print('\nWriting new persisted position data')
-set_persisted_position(
-	decawave_scan_entry,
-	x_position = 100,
-	y_position = 200,
-	z_position = 300)
-
-# Get location data
-print('\nGetting location data')
-location_data_after = get_location_data(decawave_scan_entry)
-
-# Print location data
-print('Position data:')
-print('  X: {} mm'.format(location_data_after['position_data']['x_position']))
-print('  Y: {} mm'.format(location_data_after['position_data']['y_position']))
-print('  Z: {} mm'.format(location_data_after['position_data']['z_position']))
-print('  Quality: {}'.format(location_data_after['position_data']['quality']))
-
-# Restore persisted position data
-print('\nRestoring persisted position data')
-persisted_position_data = location_data_before['position_data']
-write_persisted_position_data(decawave_scan_entry, persisted_position_data)
-
-# Get location data
-print('\nGetting location data')
-location_data_restored = get_location_data(decawave_scan_entry)
-
-# Print location data
-print('Position data:')
-print('  X: {} mm'.format(location_data_restored['position_data']['x_position']))
-print('  Y: {} mm'.format(location_data_restored['position_data']['y_position']))
-print('  Z: {} mm'.format(location_data_restored['position_data']['z_position']))
-print('  Quality: {}'.format(location_data_restored['position_data']['quality']))
-
-# Get operation mode data
-print('\nGetting operation mode data')
-operation_mode_data_before = get_operation_mode_data(decawave_scan_entry)
-
-# Print location data
-print('Operation mode data:')
+# Print operation mode data (before)
+print('Operation mode data (before change):')
 print('  Device type: {}'.format(operation_mode_data_before['device_type']))
 print('  Device type name: {}'.format(operation_mode_data_before['device_type_name']))
 print('  UWB mode: {}'.format(operation_mode_data_before['uwb_mode']))
@@ -160,20 +130,55 @@ print('  Low power mode: {}'.format(operation_mode_data_before['low_power_mode']
 print('  Location engine: {}'.format(operation_mode_data_before['location_engine']))
 print('  Reserved (2): {}'.format(operation_mode_data_before['reserved_02']))
 
+# Print update rate data (before)
+print('Update rate data (before change):')
+print('  Moving update rate: {}'.format(update_rate_data_before['moving_update_rate']))
+print('  Stationary update rate: {}'.format(update_rate_data_before['stationary_update_rate']))
+
+# Write new persisted position data
+print('\nWriting new persisted position data')
+set_persisted_position(
+	decawave_scan_entry,
+	x_position = 100,
+	y_position = 200,
+	z_position = 300)
+
 # Write new operation mode data
-print('\nWriting new operation mode data')
+print('Writing new operation mode data')
 set_operation_mode(
 	decawave_scan_entry,
 	device_type_name = 'Tag',
 	uwb_mode_name = 'Passive',
 	initiator = False)
 
-# Get operation mode data
-print('\nGetting operation mode data')
+# Write new update rate data
+print('Writing new update rate data')
+set_update_rate(
+	decawave_scan_entry,
+	moving_update_rate = 300,
+	stationary_update_rate = 400)
+
+# Get location data (after)
+print('\nGetting location data (new)')
+location_data_after = get_location_data(decawave_scan_entry)
+
+# Get operation mode data (after)
+print('Getting operation mode data (new)')
 operation_mode_data_after = get_operation_mode_data(decawave_scan_entry)
 
-# Print location data
-print('Operation mode data:')
+# Get update rate data (after)
+print('Getting update rate data (new)')
+update_rate_data_after = get_update_rate_data(decawave_scan_entry)
+
+# Print location data (after)
+print('\nPosition data (new):')
+print('  X: {} mm'.format(location_data_after['position_data']['x_position']))
+print('  Y: {} mm'.format(location_data_after['position_data']['y_position']))
+print('  Z: {} mm'.format(location_data_after['position_data']['z_position']))
+print('  Quality: {}'.format(location_data_after['position_data']['quality']))
+
+# Print operation_mode data (after)
+print('Operation mode data (new):')
 print('  Device type: {}'.format(operation_mode_data_after['device_type']))
 print('  Device type name: {}'.format(operation_mode_data_after['device_type_name']))
 print('  UWB mode: {}'.format(operation_mode_data_after['uwb_mode']))
@@ -189,16 +194,45 @@ print('  Low power mode: {}'.format(operation_mode_data_after['low_power_mode'])
 print('  Location engine: {}'.format(operation_mode_data_after['location_engine']))
 print('  Reserved (2): {}'.format(operation_mode_data_after['reserved_02']))
 
+# Print update rate data (after)
+print('Update rate data (new):')
+print('  Moving update rate: {}'.format(update_rate_data_after['moving_update_rate']))
+print('  Stationary update rate: {}'.format(update_rate_data_after['stationary_update_rate']))
+
+# Restore persisted position data
+print('\nRestoring persisted position data')
+persisted_position_data = location_data_before['position_data']
+write_persisted_position_data(decawave_scan_entry, persisted_position_data)
+
 # Restoring operation mode data
-print('\nRestoring operation mode data')
+print('Restoring operation mode data')
 write_operation_mode_data(decawave_scan_entry, operation_mode_data_before)
 
-# Get operation mode data
-print('\nGetting operation mode data')
+# Restore update rate data
+print('Restoring update rate data')
+write_update_rate_data(decawave_scan_entry, update_rate_data_before)
+
+# Get location data (restored)
+print('\nGetting location data (restored)')
+location_data_restored = get_location_data(decawave_scan_entry)
+
+# Get operation mode data (restored)
+print('Getting operation mode data (restored)')
 operation_mode_data_restored = get_operation_mode_data(decawave_scan_entry)
 
-# Print location data
-print('Operation mode data:')
+# Get update rate data (restored)
+print('Getting update rate data (restored)')
+update_rate_data_restored = get_update_rate_data(decawave_scan_entry)
+
+# Print location data (restored)
+print('\nPosition data (restored):')
+print('  X: {} mm'.format(location_data_restored['position_data']['x_position']))
+print('  Y: {} mm'.format(location_data_restored['position_data']['y_position']))
+print('  Z: {} mm'.format(location_data_restored['position_data']['z_position']))
+print('  Quality: {}'.format(location_data_restored['position_data']['quality']))
+
+# Print operation mode data (restored)
+print('Operation mode data (restored):')
 print('  Device type: {}'.format(operation_mode_data_restored['device_type']))
 print('  Device type name: {}'.format(operation_mode_data_restored['device_type_name']))
 print('  UWB mode: {}'.format(operation_mode_data_restored['uwb_mode']))
@@ -214,38 +248,7 @@ print('  Low power mode: {}'.format(operation_mode_data_restored['low_power_mode
 print('  Location engine: {}'.format(operation_mode_data_restored['location_engine']))
 print('  Reserved (2): {}'.format(operation_mode_data_restored['reserved_02']))
 
-# Get update rate data
-print('\nGetting update rate data')
-update_rate_data_before = get_update_rate_data(decawave_scan_entry)
-# Print location data
-print('Update rate data:')
-print('  Moving update rate: {}'.format(update_rate_data_before['moving_update_rate']))
-print('  Stationary update rate: {}'.format(update_rate_data_before['stationary_update_rate']))
-
-# Write new update rate data
-print('\nWriting new update rate data')
-set_update_rate(
-	decawave_scan_entry,
-	moving_update_rate = 300,
-	stationary_update_rate = 400)
-
-# Get update rate data
-print('\nGetting update rate data')
-update_rate_data_after = get_update_rate_data(decawave_scan_entry)
-
-# Print location data
-print('Update rate data:')
-print('  Moving update rate: {}'.format(update_rate_data_after['moving_update_rate']))
-print('  Stationary update rate: {}'.format(update_rate_data_after['stationary_update_rate']))
-
-# Restore update rate data
-print('\nRestoring update rate data')
-write_update_rate_data(decawave_scan_entry, update_rate_data_before)
-
-# Get update rate data
-print('\nGetting update rate data')
-update_rate_data_restored = get_update_rate_data(decawave_scan_entry)
-# Print location data
-print('Update rate data:')
+# Print update rate data (restored)
+print('Update rate data (restored):')
 print('  Moving update rate: {}'.format(update_rate_data_restored['moving_update_rate']))
 print('  Stationary update rate: {}'.format(update_rate_data_restored['stationary_update_rate']))
