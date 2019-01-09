@@ -2,13 +2,6 @@ from decawave_ble import *
 import bluepy.btle
 import json
 
-# Extend the default JSON encoder so it can handle bluepy.btle.UUID objects
-class CustomJSONEncoder(json.JSONEncoder):
-	def default(self, obj):
-		if isinstance(obj, bluepy.btle.UUID):
-			return str(obj)
-		return json.JSONencoder.default(self.obj)
-
 # Paths for saving results
 output_path_stem = 'scan_results'
 text_output_path = output_path_stem + '.txt'
@@ -48,7 +41,7 @@ for decawave_scan_entry in decawave_scan_entries:
 	network_id = get_network_id(decawave_peripheral)
 	# Get location data mode data
 	print('Getting location data mode')
-	location_data_mode_data = get_location_data_mode(decawave_peripheral)
+	location_data_mode_data = get_location_data_mode_data(decawave_peripheral)
 	# Get location data
 	print('Getting location data')
 	location_data = get_location_data(decawave_peripheral)

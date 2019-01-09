@@ -1,7 +1,6 @@
 import bluepy.btle
-import json
-import collections
 import bitstruct
+import json
 
 # BLE advertising data type codes
 SHORT_LOCAL_NAME_TYPE_CODE = 8
@@ -46,6 +45,13 @@ LOCATION_DATA_CONTENT_NAMES = [
 	'Position only',
 	'Distances',
 	'Position and distances']
+
+# Extend the default JSON encoder so it can handle bluepy.btle.UUID objects
+class CustomJSONEncoder(json.JSONEncoder):
+        def default(self, obj):
+                if isinstance(obj, bluepy.btle.UUID):
+                        return str(obj)
+                return json.JSONencoder.default(self.obj)
 
 # Function for retrieving Decawave scan entries
 def get_decawave_scan_entries():
@@ -172,7 +178,7 @@ def pack_operation_mode_bytes(operation_mode_data):
 	return operation_mode_bytes
 
 # Function for getting location data mode data
-def get_location_data_mode(decawave_peripheral):
+def get_location_data_mode_data(decawave_peripheral):
 	bytes = read_decawave_characteristic(
 		decawave_peripheral,
 		LOCATION_DATA_MODE_CHARACTERISTIC_UUID)
