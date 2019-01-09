@@ -129,14 +129,8 @@ def get_data(mac_address):
 	location_data_mode_data = get_location_data_mode_data_from_peripheral(decawave_peripheral)
 	location_data = get_location_data_from_peripheral(decawave_peripheral)
 	proxy_positions_data = get_proxy_positions_data_from_peripheral(decawave_peripheral)
-	if operation_mode_data['device_type_name'] == 'Anchor':
-		anchor_list_data = get_anchor_list_data_from_peripheral(decawave_peripheral)
-	else:
-		anchor_list_data = None
-	if operation_mode_data['device_type_name'] == 'Tag':
-		update_rate_data = get_update_rate_data_from_peripheral(decawave_peripheral)
-	else:
-		update_rate_data = None
+	anchor_list_data = get_anchor_list_data_from_peripheral(decawave_peripheral)
+	update_rate_data = get_update_rate_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	data = {
 		'operation_mode_data': operation_mode_data,
