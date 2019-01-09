@@ -181,6 +181,21 @@ def set_config(
 		quality)
 	decawave_peripheral.disconnect()
 
+def write_data(
+	mac_address,
+	data):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
+	write_operation_mode_data_to_peripheral(
+		decawave_peripheral,
+		data['operation_mode_data'])
+	write_update_rate_data_to_peripheral(
+		decawave_peripheral,
+		data['update_rate_data'])
+	write_persisted_position_data_to_peripheral(
+		decawave_peripheral,
+		data['persisted_position_data'])
+	decawave_peripheral.disconnect()
+
 # Functions for getting operation mode data
 def get_operation_mode_data(mac_address):
 	decawave_peripheral = get_decawave_peripheral(mac_address)
