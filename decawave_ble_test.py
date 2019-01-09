@@ -225,10 +225,10 @@ print('  Stationary update rate: {}'.format(update_rate_data_before['stationary_
 
 # Write new update rate data
 print('\nWriting new update rate data')
-update_rate_data = {
-	'moving_update_rate': 300,
-	'stationary_update_rate': 400}
-write_update_rate_data(decawave_scan_entry, update_rate_data)
+set_update_rate(
+	decawave_scan_entry,
+	moving_update_rate = 300,
+	stationary_update_rate = 400)
 
 # Get update rate data
 print('\nGetting update rate data')

@@ -149,7 +149,6 @@ def get_data(mac_address):
 		'update_rate_data': update_rate_data}
 	return(data)
 
-
 # Functions for getting operation mode data
 def get_operation_mode_data(mac_address):
 	decawave_peripheral = get_decawave_peripheral(mac_address)
@@ -355,7 +354,6 @@ def get_network_id_from_peripheral(decawave_peripheral):
 	data = parse_network_id_bytes(bytes)
 	return(data)
 
-# Function for parsing bytes from network ID characteristic
 def parse_network_id_bytes(network_id_bytes):
 	if len(network_id_bytes) > 0:
 		network_id = bitstruct.unpack(
@@ -479,6 +477,30 @@ def parse_update_rate_bytes(update_rate_bytes):
 	return update_rate_data
 
 # Functions for writing update rate data
+def set_update_rate(
+	mac_address,
+	moving_update_rate = None,
+	stationary_update_rate = None):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
+	set_update_rate_to_peripheral(
+		decawave_peripheral,
+		moving_update_rate,
+		stationary_update_rate)
+	decawave_peripheral.disconnect()
+
+def set_update_rate_to_peripheral(
+	decawave_peripheral,
+	moving_update_rate = None,
+	stationary_update_rate = None):
+	update_rate_data = get_update_rate_data_from_peripheral(decawave_peripheral)
+	if moving_update_rate is not None:
+		update_rate_data['moving_update_rate'] = moving_update_rate
+	if stationary_update_rate is not None:
+		update_rate_data['stationary_update_rate'] = stationary_update_rate
+	write_update_rate_data_to_peripheral(
+		decawave_peripheral,
+		update_rate_data)
+
 def write_update_rate_data(mac_address, data):
 	decawave_peripheral = get_decawave_peripheral(mac_address)
 	write_update_rate_data_to_peripheral(decawave_peripheral, data)
