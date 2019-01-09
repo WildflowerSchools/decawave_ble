@@ -199,19 +199,6 @@ write_data(
 	decawave_scan_entry,
 	original_data)
 
-# Restore persisted position data
-#print('\nRestoring persisted position data')
-#persisted_position_data = location_data_before['position_data']
-#write_persisted_position_data(decawave_scan_entry, persisted_position_data)
-
-# Restoring operation mode data
-#print('Restoring operation mode data')
-#write_operation_mode_data(decawave_scan_entry, operation_mode_data_before)
-
-# Restore update rate data
-#print('Restoring update rate data')
-#write_update_rate_data(decawave_scan_entry, update_rate_data_before)
-
 # Get location data (restored)
 print('\nGetting location data (restored)')
 location_data_restored = get_location_data(decawave_scan_entry)
