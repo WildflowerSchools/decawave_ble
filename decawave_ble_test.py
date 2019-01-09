@@ -163,19 +163,11 @@ print('  Reserved (2): {}'.format(operation_mode_data_before['reserved_02']))
 
 # Write new operation mode data
 print('\nWriting new operation mode data')
-operation_mode_data = {
-	'device_type': 0,
-	'uwb_mode': 1,
-	'fw_version': operation_mode_data_before['fw_version'],
-	'accelerometer_enable': operation_mode_data_before['accelerometer_enable'],
-	'led_enable': operation_mode_data_before['led_enable'],
-	'fw_update_enable': operation_mode_data_before['fw_update_enable'],
-	'reserved_01': operation_mode_data_before['reserved_01'],
-	'initiator': False,
-	'low_power_mode': operation_mode_data_before['low_power_mode'],
-	'location_engine': operation_mode_data_before['location_engine'],
-	'reserved_02': operation_mode_data_before['location_engine']}
-write_operation_mode_data(decawave_scan_entry, operation_mode_data)
+set_operation_mode(
+	decawave_scan_entry,
+	device_type_name = 'Tag',
+	uwb_mode_name = 'Passive',
+	initiator = False)
 
 # Get operation mode data
 print('\nGetting operation mode data')

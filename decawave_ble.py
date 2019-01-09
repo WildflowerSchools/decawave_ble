@@ -186,6 +186,58 @@ def parse_operation_mode_bytes(operation_mode_bytes):
 	return operation_mode_data
 
 # Functions for writing operation mode data
+
+def set_operation_mode(
+	mac_address,
+	device_type_name = None,
+	uwb_mode_name = None,
+	accelerometer_enable = None,
+	led_enable = None,
+	initiator = None,
+	low_power_mode = None,
+	location_engine = None):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
+	set_operation_mode_to_peripheral(
+		decawave_peripheral,
+		device_type_name,
+		uwb_mode_name,
+		accelerometer_enable,
+		led_enable,
+		initiator,
+		low_power_mode,
+		location_engine)
+	decawave_peripheral.disconnect()
+
+def set_operation_mode_to_peripheral(
+	decawave_peripheral,
+	device_type_name = None,
+	uwb_mode_name = None,
+	accelerometer_enable = None,
+	led_enable = None,
+	initiator = None,
+	low_power_mode = None,
+	location_engine = None):
+	operation_mode_data = get_operation_mode_data_from_peripheral(decawave_peripheral)
+	if device_type_name is not None:
+		operation_mode_data['device_type_name'] = device_type_name,
+		operation_mode_data['device_type'] = DEVICE_TYPE_NAMES.index(device_type_name)
+	if uwb_mode_name is not None:
+		operation_mode_data['uwb_mode_name'] = uwb_mode_name
+		operation_mode_data['uwb_mode'] = UWB_MODE_NAMES.index(uwb_mode_name)
+	if accelerometer_enable is not None:
+		operation_mode_data['accelerometer_enable'] = accelerometer_enable
+	if led_enable is not None:
+		operation_mode_data['led_enable'] = led_enable
+	if initiator is not None:
+		operation_mode_data['initiator'] = initiator
+	if low_power_mode is not None:
+		operation_mode_data['low_power_mode'] = low_power_mode
+	if location_engine is not None:
+		operation_mode_data['location_engine'] = location_engine
+	write_operation_mode_data_to_peripheral(
+		decawave_peripheral,
+		operation_mode_data)
+
 def write_operation_mode_data(mac_address, data):
 	decawave_peripheral = get_decawave_peripheral(mac_address)
 	write_operation_mode_data_to_peripheral(decawave_peripheral, data)
