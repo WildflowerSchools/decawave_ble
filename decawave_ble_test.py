@@ -79,7 +79,10 @@ for decawave_scan_entry in decawave_scan_entries:
 # Write results to JSON file
 print('\nSaving results in {}'.format(json_output_path))
 with open(json_output_path, 'w') as file:
-	json.dump(decawave_devices, file, cls=CustomJSONEncoder)
+	json.dump(
+		decawave_devices, file,
+		cls=CustomJSONEncoder,
+		indent=2)
 
 # Write results to text file
 print('Saving results in {}'.format(text_output_path))
