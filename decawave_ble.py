@@ -120,6 +120,36 @@ def get_device_name(scan_data):
 # Data and functions for parsing network node service characteristics
 # (from documentation)
 
+# Function for getting all data
+def get_data(mac_address):
+	decawave_peripheral = get_decawave_peripheral(mac_address)
+	operation_mode_data = get_operation_mode_data_from_peripheral(decawave_peripheral)
+	device_info_data = get_device_info_data_from_peripheral(decawave_peripheral)
+	network_id = get_network_id_from_peripheral(decawave_peripheral)
+	location_data_mode_data = get_location_data_mode_data_from_peripheral(decawave_peripheral)
+	location_data = get_location_data_from_peripheral(decawave_peripheral)
+	proxy_positions_data = get_proxy_positions_data_from_peripheral(decawave_peripheral)
+	if operation_mode_data['device_type_name'] == 'Anchor':
+		anchor_list_data = get_anchor_list_data_from_peripheral(decawave_peripheral)
+	else:
+		anchor_list_data = None
+	if operation_mode_data['device_type_name'] == 'Tag':
+		update_rate_data = get_update_rate_data_from_peripheral(decawave_peripheral)
+	else:
+		update_rate_data = None
+	decawave_peripheral.disconnect()
+	data = {
+		'operation_mode_data': operation_mode_data,
+		'device_info_data': device_info_data,
+		'network_id': network_id,
+		'location_data_mode_data': location_data_mode_data,
+		'location_data': location_data,
+		'proxy_positions_data': proxy_positions_data,
+		'anchor_list_data': anchor_list_data,
+		'update_rate_data': update_rate_data}
+	return(data)
+
+
 # Functions for getting operation mode data
 def get_operation_mode_data(mac_address):
 	decawave_peripheral = get_decawave_peripheral(mac_address)

@@ -23,58 +23,16 @@ for decawave_scan_entry in decawave_scan_entries:
 	print('\nGetting scan data')
 	scan_data = get_scan_data(decawave_scan_entry)
 	device_name = get_device_name(scan_data)
-#	# Connect to Decawave device
-#	print('Connecting to Decawave device {}'.format(device_name))
-#	decawave_peripheral = get_decawave_peripheral(decawave_scan_entry)
-	# Get operation mode data
-	print('Getting operation mode data')
-	operation_mode_data = get_operation_mode_data(decawave_scan_entry)
-	if operation_mode_data['device_type_name'] == 'Anchor':
+	print('Device name: {}'.format(device_name))
+	print('Getting all data')
+	decawave_device_data = get_data(decawave_scan_entry)
+	decawave_device_data['device_name'] = device_name
+	decawave_device_data['scan_data'] = scan_data
+	decawave_devices.append(decawave_device_data)
+	if decawave_device_data['operation_mode_data']['device_type_name'] == 'Anchor':
 		anchor_scan_entries.append(decawave_scan_entry)
-	if operation_mode_data['device_type_name'] == 'Tag':
+	if decawave_device_data['operation_mode_data']['device_type_name'] == 'Tag':
 		tag_scan_entries.append(decawave_scan_entry)
-	# Get device info data
-	print('Getting device info data')
-	device_info_data = get_device_info_data(decawave_scan_entry)
-	# Get network ID
-	print('Getting network ID')
-	network_id = get_network_id(decawave_scan_entry)
-	# Get location data mode data
-	print('Getting location data mode')
-	location_data_mode_data = get_location_data_mode_data(decawave_scan_entry)
-	# Get location data
-	print('Getting location data')
-	location_data = get_location_data(decawave_scan_entry)
-	# Get proxy positions data
-	print('Getting proxy positions data')
-	proxy_positions_data = get_proxy_positions_data(decawave_scan_entry)
-	print('Device type: {}'.format(operation_mode_data['device_type_name']))
-	# Get anchor list data
-	if operation_mode_data['device_type_name'] == 'Anchor':
-		print('Getting anchor list data')
-		anchor_list_data = get_anchor_list_data(decawave_scan_entry)
-	else:
-		anchor_list_data = None
-	# Get anchor list data
-	if operation_mode_data['device_type_name'] == 'Tag':
-		print('Getting update rate data')
-		update_rate_data = get_update_rate_data(decawave_scan_entry)
-	else:
-		update_rate_data = None
-#	# Disconnect from device
-#	decawave_peripheral.disconnect()
-	# Populate device data
-	decawave_devices.append({
-		'device_name': device_name,
-		'scan_data': scan_data,
-		'operation_mode_data': operation_mode_data,
-		'device_info_data': device_info_data,
-		'network_id': network_id,
-		'location_data_mode_data': location_data_mode_data,
-		'location_data': location_data,
-		'proxy_positions_data': proxy_positions_data,
-		'anchor_list_data': anchor_list_data,
-		'update_rate_data': update_rate_data})
 
 # Write results to JSON file
 print('\nSaving results in {}'.format(json_output_path))
@@ -130,19 +88,15 @@ with open(text_output_path, 'w') as file:
 			file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
 
 # Write data to Decawave devices
-
 print('\nWriting data to Decawave devices')
 decawave_scan_entry = anchor_scan_entries[0]
 scan_data = get_scan_data(decawave_scan_entry)
 device_name = get_device_name(scan_data)
 
-## Connect to Decawave device
-#print('\nConnecting to Decawave device {}'.format(device_name))
-#decawave_peripheral = get_decawave_peripheral(test_anchor_scan_entry)
-
 # Get location data
 print('\nGetting location data')
 location_data_before = get_location_data(decawave_scan_entry)
+
 # Print location data
 print('Position data:')
 print('  X: {} mm'.format(location_data_before['position_data']['x_position']))
@@ -162,6 +116,7 @@ write_persisted_position_data(decawave_scan_entry, persisted_position_data)
 # Get location data
 print('\nGetting location data')
 location_data_after = get_location_data(decawave_scan_entry)
+
 # Print location data
 print('Position data:')
 print('  X: {} mm'.format(location_data_after['position_data']['x_position']))
@@ -177,6 +132,7 @@ write_persisted_position_data(decawave_scan_entry, persisted_position_data)
 # Get location data
 print('\nGetting location data')
 location_data_restored = get_location_data(decawave_scan_entry)
+
 # Print location data
 print('Position data:')
 print('  X: {} mm'.format(location_data_restored['position_data']['x_position']))
@@ -187,6 +143,7 @@ print('  Quality: {}'.format(location_data_restored['position_data']['quality'])
 # Get operation mode data
 print('\nGetting operation mode data')
 operation_mode_data_before = get_operation_mode_data(decawave_scan_entry)
+
 # Print location data
 print('Operation mode data:')
 print('  Device type: {}'.format(operation_mode_data_before['device_type']))
@@ -223,6 +180,7 @@ write_operation_mode_data(decawave_scan_entry, operation_mode_data)
 # Get operation mode data
 print('\nGetting operation mode data')
 operation_mode_data_after = get_operation_mode_data(decawave_scan_entry)
+
 # Print location data
 print('Operation mode data:')
 print('  Device type: {}'.format(operation_mode_data_after['device_type']))
@@ -247,6 +205,7 @@ write_operation_mode_data(decawave_scan_entry, operation_mode_data_before)
 # Get operation mode data
 print('\nGetting operation mode data')
 operation_mode_data_restored = get_operation_mode_data(decawave_scan_entry)
+
 # Print location data
 print('Operation mode data:')
 print('  Device type: {}'.format(operation_mode_data_restored['device_type']))
@@ -282,6 +241,7 @@ write_update_rate_data(decawave_scan_entry, update_rate_data)
 # Get update rate data
 print('\nGetting update rate data')
 update_rate_data_after = get_update_rate_data(decawave_scan_entry)
+
 # Print location data
 print('Update rate data:')
 print('  Moving update rate: {}'.format(update_rate_data_after['moving_update_rate']))
@@ -298,6 +258,3 @@ update_rate_data_restored = get_update_rate_data(decawave_scan_entry)
 print('Update rate data:')
 print('  Moving update rate: {}'.format(update_rate_data_restored['moving_update_rate']))
 print('  Stationary update rate: {}'.format(update_rate_data_restored['stationary_update_rate']))
-
-# Disconnect from device
-#decawave_peripheral.disconnect()
