@@ -99,6 +99,11 @@ def get_decawave_scan_entries():
 	decawave_scan_entries = list(filter(is_decawave_scan_entry, scan_entries))
 	return decawave_scan_entries
 
+# Function for identifying Decawave devices from advertising data
+def is_decawave_scan_entry(scan_entry):
+	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
+	return (short_local_name is not None and short_local_name.startswith('DW'))
+
 # Function for connecting to Decawave device
 def get_decawave_peripheral(decawave_device):
 	decawave_peripheral = bluepy.btle.Peripheral(decawave_device.scan_entry)
@@ -123,11 +128,6 @@ def write_decawave_characteristic(decawave_peripheral, characteristic_uuid, byte
 	decawave_network_node_service = get_decawave_network_node_service(decawave_peripheral)
 	characteristic = decawave_network_node_service.getCharacteristics(characteristic_uuid)[0]
 	characteristic.write(bytes)
-
-# Function for identifying Decawave devices from advertising data
-def is_decawave_scan_entry(scan_entry):
-	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
-	return (short_local_name is not None and short_local_name.startswith('DW'))
 
 # Function for getting all data
 def get_data(decawave_device):
