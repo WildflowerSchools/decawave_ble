@@ -161,6 +161,8 @@ def get_device_name(scan_data):
 
 # Function for getting all data
 def get_data(decawave_device):
+	device_name = decawave_device.device_name
+	scan_data = decawave_device.scan_data()
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	operation_mode_data = get_operation_mode_data_from_peripheral(decawave_peripheral)
 	device_info_data = get_device_info_data_from_peripheral(decawave_peripheral)
@@ -172,6 +174,8 @@ def get_data(decawave_device):
 	update_rate_data = get_update_rate_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	data = {
+		'device_name': device_name,
+		'scan_data': scan_data,
 		'operation_mode_data': operation_mode_data,
 		'device_info_data': device_info_data,
 		'network_id': network_id,

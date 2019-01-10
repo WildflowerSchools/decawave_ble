@@ -19,15 +19,9 @@ decawave_device_data_list = []
 anchor_devices = []
 tag_devices = []
 for decawave_device in decawave_devices:
-	# Get scan data
-	print('\nGetting scan data')
-	scan_data = decawave_device.scan_data()
-	device_name = decawave_device.device_name
-	print('Device name: {}'.format(device_name))
-	print('Getting all data')
+	print('\nGetting data')
 	decawave_device_data = get_data(decawave_device)
-	decawave_device_data['device_name'] = device_name
-	decawave_device_data['scan_data'] = scan_data
+	print('Device name: {}'.format(decawave_device_data['device_name']))
 	decawave_device_data_list.append(decawave_device_data)
 	if decawave_device_data['operation_mode_data']['device_type_name'] == 'Anchor':
 		anchor_devices.append(decawave_device)
