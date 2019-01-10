@@ -25,7 +25,7 @@ for decawave_device in decawave_devices:
 	device_name = decawave_device.device_name
 	print('Device name: {}'.format(device_name))
 	print('Getting all data')
-	decawave_device_data = get_data(decawave_device.scan_entry)
+	decawave_device_data = get_data(decawave_device)
 	decawave_device_data['device_name'] = device_name
 	decawave_device_data['scan_data'] = scan_data
 	decawave_device_data_list.append(decawave_device_data)
@@ -94,19 +94,19 @@ decawave_device = anchor_devices[0]
 scan_data = decawave_device.scan_data()
 device_name = decawave_device.device_name
 print('Chosen device: {}'.format(device_name))
-decawave_scan_entry = decawave_device.scan_entry
+#decawave_scan_entry = decawave_device.scan_entry
 
 # Get location data
 print('\nGetting location data (before change)')
-location_data_before = get_location_data(decawave_scan_entry)
+location_data_before = get_location_data(decawave_device)
 
 # Get operation mode data
 print('Getting operation mode data (before change)')
-operation_mode_data_before = get_operation_mode_data(decawave_scan_entry)
+operation_mode_data_before = get_operation_mode_data(decawave_device)
 
 # Get update rate data
 print('Getting update rate data (before change)')
-update_rate_data_before = get_update_rate_data(decawave_scan_entry)
+update_rate_data_before = get_update_rate_data(decawave_device)
 
 # Print location data (before)
 print('\nPosition data (before change):')
@@ -140,7 +140,7 @@ print('  Stationary update rate: {}'.format(update_rate_data_before['stationary_
 # Write new data
 print('\nWriting new data')
 set_config(
-	decawave_scan_entry,
+	decawave_device,
 	x_position = 100,
 	y_position = 200,
 	z_position = 300,
@@ -152,15 +152,15 @@ set_config(
 
 # Get location data (after)
 print('\nGetting location data (new)')
-location_data_after = get_location_data(decawave_scan_entry)
+location_data_after = get_location_data(decawave_device)
 
 # Get operation mode data (after)
 print('Getting operation mode data (new)')
-operation_mode_data_after = get_operation_mode_data(decawave_scan_entry)
+operation_mode_data_after = get_operation_mode_data(decawave_device)
 
 # Get update rate data (after)
 print('Getting update rate data (new)')
-update_rate_data_after = get_update_rate_data(decawave_scan_entry)
+update_rate_data_after = get_update_rate_data(decawave_device)
 
 # Print location data (after)
 print('\nPosition data (new):')
@@ -198,20 +198,20 @@ original_data = {
 	'operation_mode_data': operation_mode_data_before,
 	'update_rate_data': update_rate_data_before}
 write_data(
-	decawave_scan_entry,
+	decawave_device,
 	original_data)
 
 # Get location data (restored)
 print('\nGetting location data (restored)')
-location_data_restored = get_location_data(decawave_scan_entry)
+location_data_restored = get_location_data(decawave_device)
 
 # Get operation mode data (restored)
 print('Getting operation mode data (restored)')
-operation_mode_data_restored = get_operation_mode_data(decawave_scan_entry)
+operation_mode_data_restored = get_operation_mode_data(decawave_device)
 
 # Get update rate data (restored)
 print('Getting update rate data (restored)')
-update_rate_data_restored = get_update_rate_data(decawave_scan_entry)
+update_rate_data_restored = get_update_rate_data(decawave_device)
 
 # Print location data (restored)
 print('\nPosition data (restored):')

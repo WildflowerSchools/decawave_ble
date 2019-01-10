@@ -100,8 +100,8 @@ def get_decawave_scan_entries():
 	return decawave_scan_entries
 
 # Function for connecting to Decawave device
-def get_decawave_peripheral(mac_address):
-	decawave_peripheral = bluepy.btle.Peripheral(mac_address)
+def get_decawave_peripheral(decawave_device):
+	decawave_peripheral = bluepy.btle.Peripheral(decawave_device.scan_entry)
 	return decawave_peripheral
 
 # Function for connecting to Decawave network node service
@@ -160,8 +160,8 @@ def get_device_name(scan_data):
 # (from documentation)
 
 # Function for getting all data
-def get_data(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_data(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	operation_mode_data = get_operation_mode_data_from_peripheral(decawave_peripheral)
 	device_info_data = get_device_info_data_from_peripheral(decawave_peripheral)
 	network_id = get_network_id_from_peripheral(decawave_peripheral)
@@ -184,7 +184,7 @@ def get_data(mac_address):
 
 # Functions for setting all configuration parameters
 def set_config(
-	mac_address,
+	decawave_device,
 	device_type_name = None,
 	uwb_mode_name = None,
 	accelerometer_enable = None,
@@ -198,7 +198,7 @@ def set_config(
 	y_position = None,
 	z_position = None,
 	quality = None):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	set_operation_mode_to_peripheral(
 		decawave_peripheral,
 		device_type_name,
@@ -221,9 +221,9 @@ def set_config(
 	decawave_peripheral.disconnect()
 
 def write_data(
-	mac_address,
+	decawave_device,
 	data):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	write_operation_mode_data_to_peripheral(
 		decawave_peripheral,
 		data['operation_mode_data'])
@@ -236,8 +236,8 @@ def write_data(
 	decawave_peripheral.disconnect()
 
 # Functions for getting operation mode data
-def get_operation_mode_data(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_operation_mode_data(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_operation_mode_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	return(data)
@@ -273,7 +273,7 @@ def parse_operation_mode_bytes(operation_mode_bytes):
 # Functions for writing operation mode data
 
 def set_operation_mode(
-	mac_address,
+	decawave_device,
 	device_type_name = None,
 	uwb_mode_name = None,
 	accelerometer_enable = None,
@@ -281,7 +281,7 @@ def set_operation_mode(
 	initiator = None,
 	low_power_mode = None,
 	location_engine = None):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	set_operation_mode_to_peripheral(
 		decawave_peripheral,
 		device_type_name,
@@ -323,8 +323,8 @@ def set_operation_mode_to_peripheral(
 		decawave_peripheral,
 		operation_mode_data)
 
-def write_operation_mode_data(mac_address, data):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def write_operation_mode_data(decawave_device, data):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	write_operation_mode_data_to_peripheral(decawave_peripheral, data)
 	decawave_peripheral.disconnect()
 
@@ -354,8 +354,8 @@ def pack_operation_mode_bytes(operation_mode_data):
 	return operation_mode_bytes
 
 # Functions for getting location data mode data
-def get_location_data_mode_data(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_location_data_mode_data(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_location_data_mode_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	return(data)
@@ -376,8 +376,8 @@ def parse_location_data_mode_bytes(location_data_mode_bytes):
 	return location_data_mode_data
 
 # Functions for getting location data
-def get_location_data(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_location_data(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_location_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	return(data)
@@ -427,8 +427,8 @@ def parse_location_data_bytes(location_data_bytes):
 		'distance_data': distance_data}
 
 # Functions for getting network ID
-def get_network_id(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_network_id(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_network_id_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	return(data)
@@ -450,8 +450,8 @@ def parse_network_id_bytes(network_id_bytes):
 		return None
 
 # Functions for getting proxy positions data
-def get_proxy_positions_data(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_proxy_positions_data(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_proxy_positions_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	return(data)
@@ -481,8 +481,8 @@ def parse_proxy_positions_bytes(proxy_positions_bytes):
 		return None
 
 # Functions for getting device info data
-def get_device_info_data(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_device_info_data(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_device_info_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	return(data)
@@ -510,8 +510,8 @@ def parse_device_info_bytes(device_info_bytes):
 	return device_info_data
 
 # Functions for getting anchor list data
-def get_anchor_list_data(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_anchor_list_data(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_anchor_list_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	return(data)
@@ -540,8 +540,8 @@ def parse_anchor_list_bytes(anchor_list_bytes):
 		return None
 
 # Functions for getting update rate data
-def get_update_rate_data(mac_address):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def get_update_rate_data(decawave_device):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_update_rate_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
 	return(data)
@@ -564,10 +564,10 @@ def parse_update_rate_bytes(update_rate_bytes):
 
 # Functions for writing update rate data
 def set_update_rate(
-	mac_address,
+	decawave_device,
 	moving_update_rate = None,
 	stationary_update_rate = None):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	set_update_rate_to_peripheral(
 		decawave_peripheral,
 		moving_update_rate,
@@ -587,8 +587,8 @@ def set_update_rate_to_peripheral(
 		decawave_peripheral,
 		update_rate_data)
 
-def write_update_rate_data(mac_address, data):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def write_update_rate_data(decawave_device, data):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	write_update_rate_data_to_peripheral(decawave_peripheral, data)
 	decawave_peripheral.disconnect()
 
@@ -610,12 +610,12 @@ def pack_update_rate_bytes(update_rate_data):
 
 # Functions for writing persisted position data
 def set_persisted_position(
-	mac_address,
+	decawave_device,
 	x_position = None,
 	y_position = None,
 	z_position = None,
 	quality = None):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	set_persisted_position_to_peripheral(
 		decawave_peripheral,
 		x_position,
@@ -644,8 +644,8 @@ def set_persisted_position_to_peripheral(
 		decawave_peripheral,
 		persisted_position_data)
 
-def write_persisted_position_data(mac_address, data):
-	decawave_peripheral = get_decawave_peripheral(mac_address)
+def write_persisted_position_data(decawave_device, data):
+	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	write_persisted_position_data_to_peripheral(decawave_peripheral, data)
 	decawave_peripheral.disconnect()
 
