@@ -129,36 +129,6 @@ def is_decawave_scan_entry(scan_entry):
 	short_local_name = scan_entry.getValueText(SHORT_LOCAL_NAME_TYPE_CODE)
 	return (short_local_name is not None and short_local_name.startswith('DW'))
 
-# Function for getting scan data
-def get_scan_data(decawave_scan_entry):
-	advertising_data_tuples = decawave_scan_entry.getScanData()
-	advertising_data = []
-	for advertising_data_tuple in advertising_data_tuples:
-		type_code, description, value = advertising_data_tuple
-		advertising_data.append({
-			'type_code': type_code,
-			'description': description,
-			'value': value})
-	scan_data = {
-		'mac_address': decawave_scan_entry.addr,
-		'address_type': decawave_scan_entry.addrType,
-		'interface': decawave_scan_entry.iface,
-		'rssi': decawave_scan_entry.rssi,
-		'connectable': decawave_scan_entry.connectable,
-		'advertising_data': advertising_data}
-	return scan_data
-
-# Function for getting device name from scan data
-def get_device_name(scan_data):
-	device_name = None
-	for advertising_datum in scan_data['advertising_data']:
-		if advertising_datum['type_code'] == SHORT_LOCAL_NAME_TYPE_CODE:
-			device_name = advertising_datum['value']
-	return device_name
-
-# Data and functions for parsing network node service characteristics
-# (from documentation)
-
 # Function for getting all data
 def get_data(decawave_device):
 	device_name = decawave_device.device_name

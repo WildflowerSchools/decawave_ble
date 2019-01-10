@@ -16,8 +16,6 @@ print('Found {} Decawave devices'.format(num_decawave_devices))
 # Get data from Decawave devices
 print('\nGetting data from Decawave devices')
 decawave_device_data_list = []
-anchor_devices = []
-tag_devices = []
 for decawave_device in decawave_devices:
 	print('\nGetting data')
 	decawave_device_data = get_data(decawave_device)
