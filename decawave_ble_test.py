@@ -16,8 +16,8 @@ print('Found {} Decawave devices'.format(num_decawave_devices))
 # Get data from Decawave devices
 print('\nGetting data from Decawave devices')
 decawave_device_data_list = []
-anchor_scan_entries = []
-tag_scan_entries = []
+anchor_devices = []
+tag_devices = []
 for decawave_device in decawave_devices:
 	# Get scan data
 	print('\nGetting scan data')
@@ -30,9 +30,9 @@ for decawave_device in decawave_devices:
 	decawave_device_data['scan_data'] = scan_data
 	decawave_device_data_list.append(decawave_device_data)
 	if decawave_device_data['operation_mode_data']['device_type_name'] == 'Anchor':
-		anchor_scan_entries.append(decawave_device.scan_entry)
+		anchor_devices.append(decawave_device)
 	if decawave_device_data['operation_mode_data']['device_type_name'] == 'Tag':
-		tag_scan_entries.append(decawave_device.scan_entry)
+		tag_devices.append(decawave_device)
 
 # Write results to JSON file
 print('\nSaving results in {}'.format(json_output_path))
@@ -90,10 +90,11 @@ with open(text_output_path, 'w') as file:
 
 # Write data to Decawave device
 print('\nWriting data to Decawave device')
-decawave_scan_entry = anchor_scan_entries[0]
-scan_data = get_scan_data(decawave_scan_entry)
-device_name = get_device_name(scan_data)
+decawave_device = anchor_devices[0]
+scan_data = decawave_device.scan_data()
+device_name = decawave_device.device_name
 print('Chosen device: {}'.format(device_name))
+decawave_scan_entry = decawave_device.scan_entry
 
 # Get location data
 print('\nGetting location data (before change)')
