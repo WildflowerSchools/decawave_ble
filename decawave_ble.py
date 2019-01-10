@@ -53,6 +53,45 @@ class CustomJSONEncoder(json.JSONEncoder):
                         return str(obj)
                 return json.JSONencoder.default(self.obj)
 
+# Class to represent a Decawave DWM1001 device
+class DecawaveDevice:
+	def __init__(
+		self,
+		decawave_scan_entry):
+		self.scan_entry = decawave_scan_entry
+		self.mac_address = decawave_scan_entry.addr,
+		self.address_type = decawave_scan_entry.addrType,
+		self.interface = decawave_scan_entry.iface,
+		self.rssi = decawave_scan_entry.rssi,
+		self.connectable = decawave_scan_entry.connectable,
+		advertising_data_tuples = decawave_scan_entry.getScanData()
+		self.advertising_data = []
+		self.device_name = None
+		for advertising_data_tuple in advertising_data_tuples:
+			type_code, description, value = advertising_data_tuple
+			self.advertising_data.append({
+				'type_code': type_code,
+				'description': description,
+				'value': value})
+			if type_code == SHORT_LOCAL_NAME_TYPE_CODE:
+				self.device_name = value
+
+	def scan_data(self):
+		return {
+			'device_name': self.device_name,
+			'mac_address': self.mac_address,
+			'address_type': self.address_type,
+			'interface': self.interface,
+			'rssi': self.rssi,
+			'connectable': self.connectable,
+			'advertising_data': self.advertising_data}
+
+# Function for finding Decawave devices:
+def scan_for_decawave_devices():
+	decawave_scan_entries = get_decawave_scan_entries()
+	decawave_devices = [DecawaveDevice(decawave_scan_entry) for decawave_scan_entry in decawave_scan_entries]
+	return decawave_devices
+
 # Function for retrieving Decawave scan entries
 def get_decawave_scan_entries():
 	scanner = bluepy.btle.Scanner()

@@ -9,36 +9,37 @@ json_output_path = output_path_stem + '.json'
 
 # Scan for Decawave devices
 print('\nScanning for Decawave devices')
-decawave_scan_entries = get_decawave_scan_entries()
-num_decawave_devices = len(decawave_scan_entries)
+decawave_devices = scan_for_decawave_devices()
+num_decawave_devices = len(decawave_devices)
 print('Found {} Decawave devices'.format(num_decawave_devices))
 
 # Get data from Decawave devices
 print('\nGetting data from Decawave devices')
-decawave_devices = []
+decawave_device_data_list = []
 anchor_scan_entries = []
 tag_scan_entries = []
-for decawave_scan_entry in decawave_scan_entries:
+for decawave_device in decawave_devices:
 	# Get scan data
 	print('\nGetting scan data')
-	scan_data = get_scan_data(decawave_scan_entry)
-	device_name = get_device_name(scan_data)
+	scan_data = decawave_device.scan_data()
+	device_name = decawave_device.device_name
 	print('Device name: {}'.format(device_name))
 	print('Getting all data')
-	decawave_device_data = get_data(decawave_scan_entry)
+	decawave_device_data = get_data(decawave_device.scan_entry)
 	decawave_device_data['device_name'] = device_name
 	decawave_device_data['scan_data'] = scan_data
-	decawave_devices.append(decawave_device_data)
+	decawave_device_data_list.append(decawave_device_data)
 	if decawave_device_data['operation_mode_data']['device_type_name'] == 'Anchor':
-		anchor_scan_entries.append(decawave_scan_entry)
+		anchor_scan_entries.append(decawave_device.scan_entry)
 	if decawave_device_data['operation_mode_data']['device_type_name'] == 'Tag':
-		tag_scan_entries.append(decawave_scan_entry)
+		tag_scan_entries.append(decawave_device.scan_entry)
 
 # Write results to JSON file
 print('\nSaving results in {}'.format(json_output_path))
 with open(json_output_path, 'w') as file:
 	json.dump(
-		decawave_devices, file,
+		decawave_device_data_list,
+		file,
 		cls=CustomJSONEncoder,
 		indent=2)
 
@@ -46,7 +47,7 @@ with open(json_output_path, 'w') as file:
 print('Saving results in {}'.format(text_output_path))
 with open(text_output_path, 'w') as file:
 	file.write('{} Decawave devices found:\n'.format(num_decawave_devices))
-	for decawave_device in decawave_devices:
+	for decawave_device in decawave_device_data_list:
 		file.write('\nDevice name: {}\n'.format(decawave_device['device_name']))
 		file.write('RSSI: {} dB\n'.format(decawave_device['scan_data']['rssi']))
 		file.write('Device type: {}\n'.format(decawave_device['operation_mode_data']['device_type_name']))
