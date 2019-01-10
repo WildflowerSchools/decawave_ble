@@ -110,22 +110,22 @@ def get_decawave_peripheral(decawave_device):
 	return decawave_peripheral
 
 # Function for connecting to Decawave network node service
-def get_decawave_network_node_service(decawave_peripheral):
+def get_decawave_network_node_service_from_peripheral(decawave_peripheral):
 	decawave_network_node_service = decawave_peripheral.getServiceByUUID(NETWORK_NODE_SERVICE_UUID)
 	return decawave_network_node_service
 
 # Function for reading characteristic from Decawave network node service
 # (identified by UUID)
-def read_decawave_characteristic(decawave_peripheral, characteristic_uuid):
-	decawave_network_node_service = get_decawave_network_node_service(decawave_peripheral)
+def read_decawave_characteristic_from_peripheral(decawave_peripheral, characteristic_uuid):
+	decawave_network_node_service = get_decawave_network_node_service_from_peripheral(decawave_peripheral)
 	characteristic = decawave_network_node_service.getCharacteristics(characteristic_uuid)[0]
 	bytes = characteristic.read()
 	return(bytes)
 
 # Function for writing characteristic to Decawave network node service
 # (identified by UUID)
-def write_decawave_characteristic(decawave_peripheral, characteristic_uuid, bytes):
-	decawave_network_node_service = get_decawave_network_node_service(decawave_peripheral)
+def write_decawave_characteristic_to_peripheral(decawave_peripheral, characteristic_uuid, bytes):
+	decawave_network_node_service = get_decawave_network_node_service_from_peripheral(decawave_peripheral)
 	characteristic = decawave_network_node_service.getCharacteristics(characteristic_uuid)[0]
 	characteristic.write(bytes)
 
@@ -217,7 +217,7 @@ def get_operation_mode_data(decawave_device):
 	return(data)
 
 def get_operation_mode_data_from_peripheral(decawave_peripheral):
-	bytes = read_decawave_characteristic(
+	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		OPERATION_MODE_CHARACTERISTIC_UUID)
 	data = parse_operation_mode_bytes(bytes)
@@ -304,7 +304,7 @@ def write_operation_mode_data(decawave_device, data):
 
 def write_operation_mode_data_to_peripheral(decawave_peripheral, data):
 	bytes = pack_operation_mode_bytes(data)
-	write_decawave_characteristic(
+	write_decawave_characteristic_to_peripheral(
 		decawave_peripheral,
 		OPERATION_MODE_CHARACTERISTIC_UUID,
 		bytes)
@@ -335,7 +335,7 @@ def get_location_data_mode_data(decawave_device):
 	return(data)
 
 def get_location_data_mode_data_from_peripheral(decawave_peripheral):
-	bytes = read_decawave_characteristic(
+	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		LOCATION_DATA_MODE_CHARACTERISTIC_UUID)
 	data = parse_location_data_mode_bytes(bytes)
@@ -357,7 +357,7 @@ def get_location_data(decawave_device):
 	return(data)
 
 def get_location_data_from_peripheral(decawave_peripheral):
-	bytes = read_decawave_characteristic(
+	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		LOCATION_DATA_CHARACTERISTIC_UUID)
 	data = parse_location_data_bytes(bytes)
@@ -408,7 +408,7 @@ def get_network_id(decawave_device):
 	return(data)
 
 def get_network_id_from_peripheral(decawave_peripheral):
-	bytes = read_decawave_characteristic(
+	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		NETWORK_ID_CHARACTERISTIC_UUID)
 	data = parse_network_id_bytes(bytes)
@@ -431,7 +431,7 @@ def get_proxy_positions_data(decawave_device):
 	return(data)
 
 def get_proxy_positions_data_from_peripheral(decawave_peripheral):
-	bytes = read_decawave_characteristic(
+	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		PROXY_POSITIONS_CHARACTERISTIC_UUID)
 	data = parse_proxy_positions_bytes(bytes)
@@ -462,7 +462,7 @@ def get_device_info_data(decawave_device):
 	return(data)
 
 def get_device_info_data_from_peripheral(decawave_peripheral):
-	bytes = read_decawave_characteristic(
+	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		DEVICE_INFO_CHARACTERISTIC_UUID)
 	data = parse_device_info_bytes(bytes)
@@ -491,7 +491,7 @@ def get_anchor_list_data(decawave_device):
 	return(data)
 
 def get_anchor_list_data_from_peripheral(decawave_peripheral):
-	bytes = read_decawave_characteristic(
+	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		ANCHOR_LIST_CHARACTERISTIC_UUID)
 	data = parse_anchor_list_bytes(bytes)
@@ -521,7 +521,7 @@ def get_update_rate_data(decawave_device):
 	return(data)
 
 def get_update_rate_data_from_peripheral(decawave_peripheral):
-	bytes = read_decawave_characteristic(
+	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		TAG_UPDATE_RATE_CHARACTERISTIC_UUID)
 	data = parse_update_rate_bytes(bytes)
@@ -568,7 +568,7 @@ def write_update_rate_data(decawave_device, data):
 
 def write_update_rate_data_to_peripheral(decawave_peripheral, data):
 	bytes = pack_update_rate_bytes(data)
-	write_decawave_characteristic(
+	write_decawave_characteristic_to_peripheral(
 		decawave_peripheral,
 		TAG_UPDATE_RATE_CHARACTERISTIC_UUID,
 		bytes)
@@ -625,7 +625,7 @@ def write_persisted_position_data(decawave_device, data):
 
 def write_persisted_position_data_to_peripheral(decawave_peripheral, data):
 	bytes = pack_persisted_position_bytes(data)
-	write_decawave_characteristic(
+	write_decawave_characteristic_to_peripheral(
 		decawave_peripheral,
 		ANCHOR_PERSISTED_POSITION_CHARACTERISTIC_UUID,
 		bytes)
@@ -636,5 +636,3 @@ def pack_persisted_position_bytes(persisted_position_data):
 		['x_position', 'y_position', 'z_position', 'quality'],
 		persisted_position_data)
 	return persisted_position_bytes
-
-
