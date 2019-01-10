@@ -15,18 +15,17 @@ print('Found {} Decawave devices'.format(num_decawave_devices))
 
 # Get data from Decawave devices
 print('\nGetting data from Decawave devices')
-decawave_device_data_list = []
-for decawave_device in decawave_devices:
-	print('\nGetting data')
-	decawave_device_data = get_data(decawave_device)
-	print('Device name: {}'.format(decawave_device_data['device_name']))
-	decawave_device_data_list.append(decawave_device_data)
+decawave_device_data = {}
+for device_name, decawave_device in decawave_devices.items():
+	print('\nGetting data for {}'.format(device_name))
+	data = get_data(decawave_device)
+	decawave_device_data[device_name] = data
 
 # Write results to JSON file
 print('\nSaving results in {}'.format(json_output_path))
 with open(json_output_path, 'w') as file:
 	json.dump(
-		decawave_device_data_list,
+		decawave_device_data,
 		file,
 		cls=CustomJSONEncoder,
 		indent=2)
@@ -35,8 +34,8 @@ with open(json_output_path, 'w') as file:
 print('Saving results in {}'.format(text_output_path))
 with open(text_output_path, 'w') as file:
 	file.write('{} Decawave devices found:\n'.format(num_decawave_devices))
-	for decawave_device in decawave_device_data_list:
-		file.write('\nDevice name: {}\n'.format(decawave_device['device_name']))
+	for device_name, decawave_device in decawave_device_data.items():
+		file.write('\nDevice name: {}\n'.format(device_name))
 		file.write('RSSI: {} dB\n'.format(decawave_device['scan_data']['rssi']))
 		file.write('Device type: {}\n'.format(decawave_device['operation_mode_data']['device_type_name']))
 		file.write('Initiator: {}\n'.format(decawave_device['operation_mode_data']['initiator']))
@@ -78,10 +77,10 @@ with open(text_output_path, 'w') as file:
 
 # Write data to Decawave device
 print('\nWriting data to Decawave device')
-for device_index in range(num_decawave_devices):
-	if decawave_device_data_list[device_index]['operation_mode_data']['device_type_name'] == 'Anchor':
-		decawave_device = decawave_devices[device_index]
-		original_data = decawave_device_data_list[device_index]
+for device_name, data in decawave_device_data.items():
+	if data['operation_mode_data']['device_type_name'] == 'Anchor':
+		decawave_device = decawave_devices[device_name]
+		original_data = data
 		break
 print('Chosen device: {}'.format(decawave_device.device_name))
 
