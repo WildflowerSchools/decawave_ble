@@ -81,51 +81,38 @@ print('\nWriting data to Decawave device')
 for device_index in range(num_decawave_devices):
 	if decawave_device_data_list[device_index]['operation_mode_data']['device_type_name'] == 'Anchor':
 		decawave_device = decawave_devices[device_index]
+		original_data = decawave_device_data_list[device_index]
 		break
-scan_data = decawave_device.scan_data()
-device_name = decawave_device.device_name
-print('Chosen device: {}'.format(device_name))
-
-# Get location data
-print('\nGetting location data (before change)')
-location_data_before = get_location_data(decawave_device)
-
-# Get operation mode data
-print('Getting operation mode data (before change)')
-operation_mode_data_before = get_operation_mode_data(decawave_device)
-
-# Get update rate data
-print('Getting update rate data (before change)')
-update_rate_data_before = get_update_rate_data(decawave_device)
+print('Chosen device: {}'.format(decawave_device.device_name))
 
 # Print location data (before)
 print('\nPosition data (before change):')
-print('  X: {} mm'.format(location_data_before['position_data']['x_position']))
-print('  Y: {} mm'.format(location_data_before['position_data']['y_position']))
-print('  Z: {} mm'.format(location_data_before['position_data']['z_position']))
-print('  Quality: {}'.format(location_data_before['position_data']['quality']))
+print('  X: {} mm'.format(original_data['location_data']['position_data']['x_position']))
+print('  Y: {} mm'.format(original_data['location_data']['position_data']['y_position']))
+print('  Z: {} mm'.format(original_data['location_data']['position_data']['z_position']))
+print('  Quality: {}'.format(original_data['location_data']['position_data']['quality']))
 
 # Print operation mode data (before)
 print('Operation mode data (before change):')
-print('  Device type: {}'.format(operation_mode_data_before['device_type']))
-print('  Device type name: {}'.format(operation_mode_data_before['device_type_name']))
-print('  UWB mode: {}'.format(operation_mode_data_before['uwb_mode']))
-print('  UWB mode name: {}'.format(operation_mode_data_before['uwb_mode_name']))
-print('  FW version: {}'.format(operation_mode_data_before['fw_version']))
-print('  FW version name: {}'.format(operation_mode_data_before['fw_version_name']))
-print('  Accelerometer enable: {}'.format(operation_mode_data_before['accelerometer_enable']))
-print('  LED enable: {}'.format(operation_mode_data_before['led_enable']))
-print('  FW update enable: {}'.format(operation_mode_data_before['fw_update_enable']))
-print('  Reserved (1): {}'.format(operation_mode_data_before['reserved_01']))
-print('  Initiator: {}'.format(operation_mode_data_before['initiator']))
-print('  Low power mode: {}'.format(operation_mode_data_before['low_power_mode']))
-print('  Location engine: {}'.format(operation_mode_data_before['location_engine']))
-print('  Reserved (2): {}'.format(operation_mode_data_before['reserved_02']))
+print('  Device type: {}'.format(original_data['operation_mode_data']['device_type']))
+print('  Device type name: {}'.format(original_data['operation_mode_data']['device_type_name']))
+print('  UWB mode: {}'.format(original_data['operation_mode_data']['uwb_mode']))
+print('  UWB mode name: {}'.format(original_data['operation_mode_data']['uwb_mode_name']))
+print('  FW version: {}'.format(original_data['operation_mode_data']['fw_version']))
+print('  FW version name: {}'.format(original_data['operation_mode_data']['fw_version_name']))
+print('  Accelerometer enable: {}'.format(original_data['operation_mode_data']['accelerometer_enable']))
+print('  LED enable: {}'.format(original_data['operation_mode_data']['led_enable']))
+print('  FW update enable: {}'.format(original_data['operation_mode_data']['fw_update_enable']))
+print('  Reserved (1): {}'.format(original_data['operation_mode_data']['reserved_01']))
+print('  Initiator: {}'.format(original_data['operation_mode_data']['initiator']))
+print('  Low power mode: {}'.format(original_data['operation_mode_data']['low_power_mode']))
+print('  Location engine: {}'.format(original_data['operation_mode_data']['location_engine']))
+print('  Reserved (2): {}'.format(original_data['operation_mode_data']['reserved_02']))
 
 # Print update rate data (before)
 print('Update rate data (before change):')
-print('  Moving update rate: {}'.format(update_rate_data_before['moving_update_rate']))
-print('  Stationary update rate: {}'.format(update_rate_data_before['stationary_update_rate']))
+print('  Moving update rate: {}'.format(original_data['update_rate_data']['moving_update_rate']))
+print('  Stationary update rate: {}'.format(original_data['update_rate_data']['stationary_update_rate']))
 
 # Write new data
 print('\nWriting new data')
@@ -140,94 +127,78 @@ set_config(
 	moving_update_rate = 300,
 	stationary_update_rate = 400)
 
-# Get location data (after)
-print('\nGetting location data (new)')
-location_data_after = get_location_data(decawave_device)
-
-# Get operation mode data (after)
-print('Getting operation mode data (new)')
-operation_mode_data_after = get_operation_mode_data(decawave_device)
-
-# Get update rate data (after)
-print('Getting update rate data (new)')
-update_rate_data_after = get_update_rate_data(decawave_device)
+# Get new data
+print('\nGetting new data')
+new_data = get_data(decawave_device)
 
 # Print location data (after)
 print('\nPosition data (new):')
-print('  X: {} mm'.format(location_data_after['position_data']['x_position']))
-print('  Y: {} mm'.format(location_data_after['position_data']['y_position']))
-print('  Z: {} mm'.format(location_data_after['position_data']['z_position']))
-print('  Quality: {}'.format(location_data_after['position_data']['quality']))
+print('  X: {} mm'.format(new_data['location_data']['position_data']['x_position']))
+print('  Y: {} mm'.format(new_data['location_data']['position_data']['y_position']))
+print('  Z: {} mm'.format(new_data['location_data']['position_data']['z_position']))
+print('  Quality: {}'.format(new_data['location_data']['position_data']['quality']))
 
 # Print operation_mode data (after)
 print('Operation mode data (new):')
-print('  Device type: {}'.format(operation_mode_data_after['device_type']))
-print('  Device type name: {}'.format(operation_mode_data_after['device_type_name']))
-print('  UWB mode: {}'.format(operation_mode_data_after['uwb_mode']))
-print('  UWB mode name: {}'.format(operation_mode_data_after['uwb_mode_name']))
-print('  FW version: {}'.format(operation_mode_data_after['fw_version']))
-print('  FW version name: {}'.format(operation_mode_data_after['fw_version_name']))
-print('  Accelerometer enable: {}'.format(operation_mode_data_after['accelerometer_enable']))
-print('  LED enable: {}'.format(operation_mode_data_after['led_enable']))
-print('  FW update enable: {}'.format(operation_mode_data_after['fw_update_enable']))
-print('  Reserved (1): {}'.format(operation_mode_data_after['reserved_01']))
-print('  Initiator: {}'.format(operation_mode_data_after['initiator']))
-print('  Low power mode: {}'.format(operation_mode_data_after['low_power_mode']))
-print('  Location engine: {}'.format(operation_mode_data_after['location_engine']))
-print('  Reserved (2): {}'.format(operation_mode_data_after['reserved_02']))
+print('  Device type: {}'.format(new_data['operation_mode_data']['device_type']))
+print('  Device type name: {}'.format(new_data['operation_mode_data']['device_type_name']))
+print('  UWB mode: {}'.format(new_data['operation_mode_data']['uwb_mode']))
+print('  UWB mode name: {}'.format(new_data['operation_mode_data']['uwb_mode_name']))
+print('  FW version: {}'.format(new_data['operation_mode_data']['fw_version']))
+print('  FW version name: {}'.format(new_data['operation_mode_data']['fw_version_name']))
+print('  Accelerometer enable: {}'.format(new_data['operation_mode_data']['accelerometer_enable']))
+print('  LED enable: {}'.format(new_data['operation_mode_data']['led_enable']))
+print('  FW update enable: {}'.format(new_data['operation_mode_data']['fw_update_enable']))
+print('  Reserved (1): {}'.format(new_data['operation_mode_data']['reserved_01']))
+print('  Initiator: {}'.format(new_data['operation_mode_data']['initiator']))
+print('  Low power mode: {}'.format(new_data['operation_mode_data']['low_power_mode']))
+print('  Location engine: {}'.format(new_data['operation_mode_data']['location_engine']))
+print('  Reserved (2): {}'.format(new_data['operation_mode_data']['reserved_02']))
 
 # Print update rate data (after)
 print('Update rate data (new):')
-print('  Moving update rate: {}'.format(update_rate_data_after['moving_update_rate']))
-print('  Stationary update rate: {}'.format(update_rate_data_after['stationary_update_rate']))
+print('  Moving update rate: {}'.format(new_data['update_rate_data']['moving_update_rate']))
+print('  Stationary update rate: {}'.format(new_data['update_rate_data']['stationary_update_rate']))
 
 # Restoring data
 print('\nRestoring data')
-original_data = {
-	'persisted_position_data': location_data_before['position_data'],
-	'operation_mode_data': operation_mode_data_before,
-	'update_rate_data': update_rate_data_before}
+restoring_data = {
+	'persisted_position_data': original_data['location_data']['position_data'],
+	'operation_mode_data': original_data['operation_mode_data'],
+	'update_rate_data': original_data['update_rate_data']}
 write_data(
 	decawave_device,
-	original_data)
+	restoring_data)
 
-# Get location data (restored)
-print('\nGetting location data (restored)')
-location_data_restored = get_location_data(decawave_device)
-
-# Get operation mode data (restored)
-print('Getting operation mode data (restored)')
-operation_mode_data_restored = get_operation_mode_data(decawave_device)
-
-# Get update rate data (restored)
-print('Getting update rate data (restored)')
-update_rate_data_restored = get_update_rate_data(decawave_device)
+# Get restored data
+print('\nGetting restored data')
+restored_data = get_data(decawave_device)
 
 # Print location data (restored)
 print('\nPosition data (restored):')
-print('  X: {} mm'.format(location_data_restored['position_data']['x_position']))
-print('  Y: {} mm'.format(location_data_restored['position_data']['y_position']))
-print('  Z: {} mm'.format(location_data_restored['position_data']['z_position']))
-print('  Quality: {}'.format(location_data_restored['position_data']['quality']))
+print('  X: {} mm'.format(restored_data['location_data']['position_data']['x_position']))
+print('  Y: {} mm'.format(restored_data['location_data']['position_data']['y_position']))
+print('  Z: {} mm'.format(restored_data['location_data']['position_data']['z_position']))
+print('  Quality: {}'.format(restored_data['location_data']['position_data']['quality']))
 
 # Print operation mode data (restored)
 print('Operation mode data (restored):')
-print('  Device type: {}'.format(operation_mode_data_restored['device_type']))
-print('  Device type name: {}'.format(operation_mode_data_restored['device_type_name']))
-print('  UWB mode: {}'.format(operation_mode_data_restored['uwb_mode']))
-print('  UWB mode name: {}'.format(operation_mode_data_restored['uwb_mode_name']))
-print('  FW version: {}'.format(operation_mode_data_restored['fw_version']))
-print('  FW version name: {}'.format(operation_mode_data_restored['fw_version_name']))
-print('  Accelerometer enable: {}'.format(operation_mode_data_restored['accelerometer_enable']))
-print('  LED enable: {}'.format(operation_mode_data_restored['led_enable']))
-print('  FW update enable: {}'.format(operation_mode_data_restored['fw_update_enable']))
-print('  Reserved (1): {}'.format(operation_mode_data_restored['reserved_01']))
-print('  Initiator: {}'.format(operation_mode_data_restored['initiator']))
-print('  Low power mode: {}'.format(operation_mode_data_restored['low_power_mode']))
-print('  Location engine: {}'.format(operation_mode_data_restored['location_engine']))
-print('  Reserved (2): {}'.format(operation_mode_data_restored['reserved_02']))
+print('  Device type: {}'.format(restored_data['operation_mode_data']['device_type']))
+print('  Device type name: {}'.format(restored_data['operation_mode_data']['device_type_name']))
+print('  UWB mode: {}'.format(restored_data['operation_mode_data']['uwb_mode']))
+print('  UWB mode name: {}'.format(restored_data['operation_mode_data']['uwb_mode_name']))
+print('  FW version: {}'.format(restored_data['operation_mode_data']['fw_version']))
+print('  FW version name: {}'.format(restored_data['operation_mode_data']['fw_version_name']))
+print('  Accelerometer enable: {}'.format(restored_data['operation_mode_data']['accelerometer_enable']))
+print('  LED enable: {}'.format(restored_data['operation_mode_data']['led_enable']))
+print('  FW update enable: {}'.format(restored_data['operation_mode_data']['fw_update_enable']))
+print('  Reserved (1): {}'.format(restored_data['operation_mode_data']['reserved_01']))
+print('  Initiator: {}'.format(restored_data['operation_mode_data']['initiator']))
+print('  Low power mode: {}'.format(restored_data['operation_mode_data']['low_power_mode']))
+print('  Location engine: {}'.format(restored_data['operation_mode_data']['location_engine']))
+print('  Reserved (2): {}'.format(restored_data['operation_mode_data']['reserved_02']))
 
 # Print update rate data (restored)
 print('Update rate data (restored):')
-print('  Moving update rate: {}'.format(update_rate_data_restored['moving_update_rate']))
-print('  Stationary update rate: {}'.format(update_rate_data_restored['stationary_update_rate']))
+print('  Moving update rate: {}'.format(restored_data['update_rate_data']['moving_update_rate']))
+print('  Stationary update rate: {}'.format(restored_data['update_rate_data']['stationary_update_rate']))
