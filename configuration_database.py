@@ -2,6 +2,7 @@ import pandas as pd
 import boto3
 import s3fs
 import os
+import json
 
 class ConfigurationDatabaseCSV:
 	def get_target_device_names(self):
@@ -12,7 +13,8 @@ class ConfigurationDatabaseCSV:
 		self,
 		target_device_name):
 		configuration_df = self.get_dataframe()
-		return configuration_df.to_dict(orient='index')[target_device_name]
+		configuration_dict = json.loads(configuration_df.to_json(orient='index'))
+		return configuration_dict[target_device_name]
 
 class ConfigurationDatabaseCSVS3(ConfigurationDatabaseCSV):
     def __init__(

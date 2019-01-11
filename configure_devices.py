@@ -13,7 +13,7 @@ def configure_devices_from_database(path):
 	if len(target_devices_not_present) > 0:
 		raise ValueError('Target devices not present: {}'.format(target_devices_not_present))
 	for target_device_name in target_device_names:
-		print('Getting target data for {}'.format(target_device_name))
+		print('\nGetting target data for {}'.format(target_device_name))
 		target_data = configuration_database.get_target_data(target_device_name)
 		print('Target data:\n{}'.format(target_data))
 		print('Writing target data')
