@@ -132,7 +132,7 @@ def write_decawave_characteristic_to_peripheral(decawave_peripheral, characteris
 	characteristic = decawave_network_node_service.getCharacteristics(characteristic_uuid)[0]
 	characteristic.write(bytes)
 
-# Function for getting all data
+# Function for getting a complete set of data from device(s)
 def get_data(decawave_device):
 	device_name = decawave_device.device_name
 	scan_data = decawave_device.scan_data()
@@ -158,6 +158,15 @@ def get_data(decawave_device):
 		'anchor_list_data': anchor_list_data,
 		'update_rate_data': update_rate_data}
 	return(data)
+
+def get_data_multiple_devices(decawave_devices):
+	print('\nGetting data from Decawave devices')
+	data_multiple = {}
+	for device_name, decawave_device in decawave_devices.items():
+		print('\nGetting data for {}'.format(device_name))
+		data = get_data(decawave_device)
+		data_multiple[device_name] = data
+	return data_multiple
 
 # Functions for setting all configuration parameters
 def set_config(
@@ -645,3 +654,52 @@ def pack_persisted_position_bytes(persisted_position_data):
 		['x_position', 'y_position', 'z_position', 'quality'],
 		persisted_position_data)
 	return persisted_position_bytes
+
+# Functions for outputting data from multiple Decawave devices
+def write_data_multiple_devices_to_json_local(data_multiple, path):
+	print('\nSaving results in {}'.format(path))
+	with open(path, 'w') as file:
+		json.dump(
+			data_multiple,
+			file,
+			cls=CustomJSONEncoder,
+			indent=2)
+
+def write_data_multiple_devices_to_text_local(data_multiple, path):
+	print('Saving results in {}'.format(path))
+	with open(path, 'w') as file:
+		file.write('Data for {} Decawave devices\n'.format(len(data_multiple)))
+		for device_name, decawave_device in data_multiple.items():
+			file.write('\nDevice name: {}\n'.format(device_name))
+			file.write('Node ID: {:08X}\n'.format(decawave_device['device_info_data']['node_id']))
+			file.write('Device type: {}\n'.format(decawave_device['operation_mode_data']['device_type_name']))
+			file.write('Initiator: {}\n'.format(decawave_device['operation_mode_data']['initiator']))
+			file.write('UWB mode: {}\n'.format(decawave_device['operation_mode_data']['uwb_mode_name']))
+			if decawave_device['update_rate_data'] is not None:
+				file.write('Moving update rate (ms): {}\n'.format(decawave_device['update_rate_data']['moving_update_rate']))
+				file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
+			file.write('Location engine: {}\n'.format(decawave_device['operation_mode_data']['location_engine']))
+			file.write('Location data mode name: {}\n'.format(decawave_device['location_data_mode_data']['location_data_mode_name']))
+			file.write('Location data content name: {}\n'.format(decawave_device['location_data']['location_data_content_name']))
+			if decawave_device['location_data']['position_data'] is not None:
+				file.write('Position data:\n')
+				file.write('  X: {} mm\n'.format(decawave_device['location_data']['position_data']['x_position']))
+				file.write('  Y: {} mm\n'.format(decawave_device['location_data']['position_data']['y_position']))
+				file.write('  Z: {} mm\n'.format(decawave_device['location_data']['position_data']['z_position']))
+				file.write('  Quality: {}\n'.format(decawave_device['location_data']['position_data']['quality']))
+			if decawave_device['location_data']['distance_data'] is not None:
+				file.write('Distance data:\n')
+				for distance_datum in decawave_device['location_data']['distance_data']:
+					file.write('  {:04X}: {} mm (Q={})\n'.format(
+						distance_datum['node_id'],
+						distance_datum['distance'],
+						distance_datum['quality']))
+			if decawave_device['proxy_positions_data'] is not None:
+				file.write('Proxy positions data:\n')
+				for proxy_positions_datum in decawave_device['proxy_positions_data']:
+					file.write('  Node ID: {:04X}\n'.format(proxy_positions_datum['node_id']))
+					file.write('    X: {} mm\n'.format(proxy_positions_datum['x_position']))
+					file.write('    Y: {} mm\n'.format(proxy_positions_datum['y_position']))
+					file.write('    Z: {} mm\n'.format(proxy_positions_datum['z_position']))
+					file.write('    Quality: {}\n'.format(proxy_positions_datum['quality']))
+
