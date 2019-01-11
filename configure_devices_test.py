@@ -40,13 +40,13 @@ def write_data_multiple_devices_to_text_local(data_multiple, path):
 		file.write('Data for {} Decawave devices\n'.format(len(data_multiple)))
 		for device_name, decawave_device in data_multiple.items():
 			file.write('\nDevice name: {}\n'.format(device_name))
-			file.write('RSSI: {} dB\n'.format(decawave_device['scan_data']['rssi']))
+			file.write('Node ID: {:08X}\n'.format(decawave_device['device_info_data']['node_id']))
 			file.write('Device type: {}\n'.format(decawave_device['operation_mode_data']['device_type_name']))
 			file.write('Initiator: {}\n'.format(decawave_device['operation_mode_data']['initiator']))
 			file.write('UWB mode: {}\n'.format(decawave_device['operation_mode_data']['uwb_mode_name']))
-			file.write('Network ID: {}\n'.format(decawave_device['network_id']))
-			file.write('Node ID: {:08X}\n'.format(decawave_device['device_info_data']['node_id']))
-			file.write('Bridge: {}\n'.format(decawave_device['device_info_data']['bridge']))
+			if decawave_device['update_rate_data'] is not None:
+				file.write('Moving update rate (ms): {}\n'.format(decawave_device['update_rate_data']['moving_update_rate']))
+				file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
 			file.write('Location engine: {}\n'.format(decawave_device['operation_mode_data']['location_engine']))
 			file.write('Location data mode name: {}\n'.format(decawave_device['location_data_mode_data']['location_data_mode_name']))
 			file.write('Location data content name: {}\n'.format(decawave_device['location_data']['location_data_content_name']))
@@ -71,13 +71,6 @@ def write_data_multiple_devices_to_text_local(data_multiple, path):
 					file.write('    Y: {} mm\n'.format(proxy_positions_datum['y_position']))
 					file.write('    Z: {} mm\n'.format(proxy_positions_datum['z_position']))
 					file.write('    Quality: {}\n'.format(proxy_positions_datum['quality']))
-			if decawave_device['anchor_list_data'] is not None:
-				file.write('Anchor list data:\n')
-				for node_id in decawave_device['anchor_list_data']:
-					file.write('  Node ID: {:04X}\n'.format(node_id))
-			if decawave_device['update_rate_data'] is not None:
-				file.write('Moving update rate (ms): {}\n'.format(decawave_device['update_rate_data']['moving_update_rate']))
-				file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
 
 # Scan for Decawave devices
 print('\nScanning for Decawave devices')
