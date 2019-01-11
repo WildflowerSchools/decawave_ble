@@ -2,6 +2,10 @@ from decawave_ble import *
 import configure_devices
 import json
 
+# Configuration databases
+baseline_config_database_path = 'config_data/baseline_config_database.csv'
+new_config_database_path = 'config_data/new_config_database.csv'
+
 # Paths for saving results
 output_path_stem_before = 'output/before_configuration'
 text_output_path_before = output_path_stem_before + '.txt'
@@ -90,7 +94,7 @@ write_data_multiple_devices_to_text_local(
 
 # Configure from database
 print('\nConfiguring from database')
-configure_devices.configure_devices_from_database('config_data/new_config_database.csv')
+configure_devices.configure_devices_from_database(new_config_database_path)
 
 # Get data from Decawave devices and write files
 print('\nGetting data from Decawave devices (after new configuration)')
@@ -104,7 +108,7 @@ write_data_multiple_devices_to_text_local(
 
 # Restore baseline from database
 print('\nRestoring baseline from database')
-configure_devices.configure_devices_from_database('config_data/baseline_config_database.csv')
+configure_devices.configure_devices_from_database(baseline_config_database_path)
 
 # Get data from Decawave devices and write files
 print('\nGetting data from Decawave devices (after restoration)')
