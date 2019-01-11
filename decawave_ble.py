@@ -36,14 +36,14 @@ FW_VERSION_NAMES = ['1', '2']
 
 # Names of location data mode data values
 LOCATION_DATA_MODE_NAMES = [
-	'Position',
-	'Distances',
+	'Position only',
+	'Distances only',
 	'Position and distances']
 
 # Names of location data content values
 LOCATION_DATA_CONTENT_NAMES = [
 	'Position only',
-	'Distances',
+	'Distances only',
 	'Position and distances']
 
 # Extend the default JSON encoder so it can handle bluepy.btle.UUID objects
