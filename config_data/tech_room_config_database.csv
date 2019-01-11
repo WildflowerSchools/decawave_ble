@@ -1,0 +1,13 @@
+device_name,device_type_name,uwb_mode_name,initiator,moving_update_rate,stationary_update_rate,x_position,y_position,z_position,quality
+DW169F,Tag,Active,False,100,100,,,,
+DW0D9F,Tag,Passive,False,100,100,,,,
+DWD538,Anchor,Active,True,100,10000,100,20,80,100
+DW1608,Anchor,Active,False,100,10000,2700,20,80,100
+DWD631,Anchor,Active,False,100,10000,20,2170,80,100
+DWDA27,Anchor,Active,False,100,10000,2830,2170,80,100
+DWDC83,Anchor,Active,False,100,10000,10,20,2480,100
+DWCDB8,Anchor,Active,False,100,10000,2700,20,2480,100
+DW4B94,Anchor,Active,False,100,10000,10,2170,2480,100
+DW088C,Anchor,Active,False,100,10000,2830,2170,2480,100
+
+
