@@ -7,11 +7,15 @@ def configure_devices_from_database(path):
 	print('Getting target device names')
 	target_device_names = configuration_database.get_target_device_names()
 	print('Target device names: {}'.format(target_device_names))
+	print('Scanning for Decawave devices')
 	devices = decawave_ble.scan_for_decawave_devices()
+	print('Found {} Decawave devices'.format(len(devices)))
 	device_names = list(devices.keys())
 	target_devices_not_present = set(target_device_names) - set(device_names)
 	if len(target_devices_not_present) > 0:
 		raise ValueError('Target devices not present: {}'.format(target_devices_not_present))
+	else:
+		print('Found all target devices')
 	for target_device_name in target_device_names:
 		print('\nGetting target data for {}'.format(target_device_name))
 		target_data = configuration_database.get_target_data(target_device_name)
