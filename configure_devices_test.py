@@ -3,13 +3,13 @@ import configure_devices
 import json
 
 # Paths for saving results
-output_path_stem_before = 'before_configuration'
+output_path_stem_before = 'output/before_configuration'
 text_output_path_before = output_path_stem_before + '.txt'
 json_output_path_before = output_path_stem_before + '.json'
-output_path_stem_after = 'after_configuration'
+output_path_stem_after = 'output/after_configuration'
 text_output_path_after = output_path_stem_after + '.txt'
 json_output_path_after = output_path_stem_after + '.json'
-output_path_stem_restored = 'restored'
+output_path_stem_restored = 'output/restored'
 text_output_path_restored = output_path_stem_restored + '.txt'
 json_output_path_restored = output_path_stem_restored + '.json'
 
@@ -97,7 +97,7 @@ write_data_multiple_devices_to_text_local(
 
 # Configure from database
 print('\nConfiguring from database')
-configure_devices.configure_devices_from_database('new_config_database.csv')
+configure_devices.configure_devices_from_database('config_data/new_config_database.csv')
 
 # Get data from Decawave devices and write files
 print('\nGetting data from Decawave devices (after new configuration)')
@@ -111,7 +111,7 @@ write_data_multiple_devices_to_text_local(
 
 # Restore baseline from database
 print('\nRestoring baseline from database')
-configure_devices.configure_devices_from_database('baseline_config_database.csv')
+configure_devices.configure_devices_from_database('config_data/baseline_config_database.csv')
 
 # Get data from Decawave devices and write files
 print('\nGetting data from Decawave devices (after restoration)')
