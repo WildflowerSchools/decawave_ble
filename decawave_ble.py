@@ -160,10 +160,9 @@ def get_data(decawave_device):
 	return(data)
 
 def get_data_multiple_devices(decawave_devices):
-	print('\nGetting data from Decawave devices')
 	data_multiple = {}
 	for device_name, decawave_device in decawave_devices.items():
-		print('\nGetting data for {}'.format(device_name))
+		print('Getting data for {}'.format(device_name))
 		data = get_data(decawave_device)
 		data_multiple[device_name] = data
 	return data_multiple
