@@ -123,7 +123,7 @@ def read_decawave_characteristic_from_peripheral(decawave_peripheral, characteri
 	decawave_network_node_service = get_decawave_network_node_service_from_peripheral(decawave_peripheral)
 	characteristic = decawave_network_node_service.getCharacteristics(characteristic_uuid)[0]
 	bytes = characteristic.read()
-	return(bytes)
+	return bytes
 
 # Function for writing characteristic to Decawave network node service
 # (identified by UUID)
@@ -157,7 +157,7 @@ def get_data(decawave_device):
 		'proxy_positions_data': proxy_positions_data,
 		'anchor_list_data': anchor_list_data,
 		'update_rate_data': update_rate_data}
-	return(data)
+	return data
 
 def get_data_multiple_devices(decawave_devices):
 	data_multiple = {}
@@ -225,14 +225,14 @@ def get_operation_mode_data(decawave_device):
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_operation_mode_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
-	return(data)
+	return data
 
 def get_operation_mode_data_from_peripheral(decawave_peripheral):
 	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		OPERATION_MODE_CHARACTERISTIC_UUID)
 	data = parse_operation_mode_bytes(bytes)
-	return(data)
+	return data
 
 def parse_operation_mode_bytes(operation_mode_bytes):
 	operation_mode_data = bitstruct.unpack_dict(
@@ -343,14 +343,14 @@ def get_location_data_mode_data(decawave_device):
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_location_data_mode_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
-	return(data)
+	return data
 
 def get_location_data_mode_data_from_peripheral(decawave_peripheral):
 	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		LOCATION_DATA_MODE_CHARACTERISTIC_UUID)
 	data = parse_location_data_mode_bytes(bytes)
-	return(data)
+	return data
 
 def parse_location_data_mode_bytes(location_data_mode_bytes):
 	location_data_mode = location_data_mode_bytes[0]
@@ -365,14 +365,14 @@ def get_location_data(decawave_device):
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_location_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
-	return(data)
+	return data
 
 def get_location_data_from_peripheral(decawave_peripheral):
 	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		LOCATION_DATA_CHARACTERISTIC_UUID)
 	data = parse_location_data_bytes(bytes)
-	return(data)
+	return data
 
 def parse_location_data_bytes(location_data_bytes):
 	if len(location_data_bytes) > 0:
@@ -416,14 +416,14 @@ def get_network_id(decawave_device):
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_network_id_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
-	return(data)
+	return data
 
 def get_network_id_from_peripheral(decawave_peripheral):
 	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		NETWORK_ID_CHARACTERISTIC_UUID)
 	data = parse_network_id_bytes(bytes)
-	return(data)
+	return data
 
 def parse_network_id_bytes(network_id_bytes):
 	if len(network_id_bytes) > 0:
@@ -439,14 +439,14 @@ def get_proxy_positions_data(decawave_device):
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_proxy_positions_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
-	return(data)
+	return data
 
 def get_proxy_positions_data_from_peripheral(decawave_peripheral):
 	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		PROXY_POSITIONS_CHARACTERISTIC_UUID)
 	data = parse_proxy_positions_bytes(bytes)
-	return(data)
+	return data
 
 def parse_proxy_positions_bytes(proxy_positions_bytes):
 	if len(proxy_positions_bytes) > 0:
@@ -470,14 +470,14 @@ def get_device_info_data(decawave_device):
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_device_info_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
-	return(data)
+	return data
 
 def get_device_info_data_from_peripheral(decawave_peripheral):
 	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		DEVICE_INFO_CHARACTERISTIC_UUID)
 	data = parse_device_info_bytes(bytes)
-	return(data)
+	return data
 
 def parse_device_info_bytes(device_info_bytes):
 	device_info_data = bitstruct.unpack_dict(
@@ -499,14 +499,14 @@ def get_anchor_list_data(decawave_device):
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_anchor_list_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
-	return(data)
+	return data
 
 def get_anchor_list_data_from_peripheral(decawave_peripheral):
 	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		ANCHOR_LIST_CHARACTERISTIC_UUID)
 	data = parse_anchor_list_bytes(bytes)
-	return(data)
+	return data
 
 def parse_anchor_list_bytes(anchor_list_bytes):
 	if len(anchor_list_bytes) > 0:
@@ -529,14 +529,14 @@ def get_update_rate_data(decawave_device):
 	decawave_peripheral = get_decawave_peripheral(decawave_device)
 	data = get_update_rate_data_from_peripheral(decawave_peripheral)
 	decawave_peripheral.disconnect()
-	return(data)
+	return data
 
 def get_update_rate_data_from_peripheral(decawave_peripheral):
 	bytes = read_decawave_characteristic_from_peripheral(
 		decawave_peripheral,
 		TAG_UPDATE_RATE_CHARACTERISTIC_UUID)
 	data = parse_update_rate_bytes(bytes)
-	return(data)
+	return data
 
 def parse_update_rate_bytes(update_rate_bytes):
 	update_rate_data = bitstruct.unpack_dict(
