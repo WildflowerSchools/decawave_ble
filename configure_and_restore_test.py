@@ -1,5 +1,6 @@
 import decawave_ble
 import configure_devices
+from config.csv import ConfigurationDatabaseCSVLocal
 
 # Configuration databases
 baseline_config_database_path = 'config_data/baseline_config_database.csv'
@@ -26,37 +27,37 @@ print('Found {} Decawave devices'.format(num_decawave_devices))
 print('\nGetting data from Decawave devices (before configuration)')
 decawave_device_data_before = decawave_ble.get_data_multiple_devices(decawave_devices)
 decawave_ble.write_data_multiple_devices_to_json_local(
-	decawave_device_data_before,
-	json_output_path_before)
+    decawave_device_data_before,
+    json_output_path_before)
 decawave_ble.write_data_multiple_devices_to_text_local(
-	decawave_device_data_before,
-	text_output_path_before)
+    decawave_device_data_before,
+    text_output_path_before)
 
 # Configure from database
 print('\nConfiguring from database')
-configure_devices.configure_devices_from_database(new_config_database_path)
+configure_devices.configure_devices_from_database(ConfigurationDatabaseCSVLocal(new_config_database_path))
 
 # Get data from Decawave devices and write files
 print('\nGetting data from Decawave devices (after new configuration)')
 decawave_device_data_after = decawave_ble.get_data_multiple_devices(decawave_devices)
 decawave_ble.write_data_multiple_devices_to_json_local(
-	decawave_device_data_after,
-	json_output_path_after)
+    decawave_device_data_after,
+    json_output_path_after)
 decawave_ble.write_data_multiple_devices_to_text_local(
-	decawave_device_data_after,
-	text_output_path_after)
+    decawave_device_data_after,
+    text_output_path_after)
 
 # Restore baseline from database
 print('\nRestoring baseline from database')
-configure_devices.configure_devices_from_database(baseline_config_database_path)
+configure_devices.configure_devices_from_database(ConfigurationDatabaseCSVLocal(baseline_config_database_path))
 
 # Get data from Decawave devices and write files
 print('\nGetting data from Decawave devices (after restoration)')
 decawave_device_data_restored = decawave_ble.get_data_multiple_devices(decawave_devices)
 decawave_ble.write_data_multiple_devices_to_json_local(
-	decawave_device_data_restored,
-	json_output_path_restored)
+    decawave_device_data_restored,
+    json_output_path_restored)
 decawave_ble.write_data_multiple_devices_to_text_local(
-	decawave_device_data_restored,
-	text_output_path_restored)
+    decawave_device_data_restored,
+    text_output_path_restored)
 
