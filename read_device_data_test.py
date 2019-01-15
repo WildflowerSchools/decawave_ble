@@ -15,8 +15,8 @@ print('Found {} Decawave devices'.format(num_decawave_devices))
 print('\nGetting data from Decawave devices')
 decawave_device_data = decawave_ble.get_data_multiple_devices(decawave_devices)
 decawave_ble.write_data_multiple_devices_to_json_local(
-	decawave_device_data,
-	json_output_path)
+    decawave_device_data,
+    json_output_path)
 decawave_ble.write_data_multiple_devices_to_text_local(
-	decawave_device_data,
-	text_output_path)
+    decawave_device_data,
+    text_output_path)
