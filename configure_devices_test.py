@@ -1,5 +1,5 @@
-import configure_devices
-from config.csv import ConfigurationDatabaseCSVLocal
+from decawave_ble import configure_devices
+from decawave_ble.config.csv import ConfigurationDatabaseCSVLocal
 
 
 # Configuration databases

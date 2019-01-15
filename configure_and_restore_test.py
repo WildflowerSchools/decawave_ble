@@ -1,6 +1,6 @@
 import decawave_ble
-import configure_devices
-from config.csv import ConfigurationDatabaseCSVLocal
+from decawave_ble import configure_devices
+from decawave_ble.config.csv import ConfigurationDatabaseCSVLocal
 
 # Configuration databases
 baseline_config_database_path = 'config_data/baseline_config_database.csv'
@@ -60,4 +60,3 @@ decawave_ble.write_data_multiple_devices_to_json_local(
 decawave_ble.write_data_multiple_devices_to_text_local(
     decawave_device_data_restored,
     text_output_path_restored)
-
