@@ -15,9 +15,6 @@ setup(
         'bitstruct'
     ],
     extras_require={
-        'honeycomb': [
-            'honeycomb',
-        ],
         's3': [
             'boto3',
         ],
