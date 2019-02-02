@@ -205,6 +205,45 @@ def set_config(
         quality)
     decawave_peripheral.disconnect()
 
+def check_config(
+    decawave_device,
+    device_type_name = None,
+    uwb_mode_name = None,
+    accelerometer_enable = None,
+    led_enable = None,
+    initiator = None,
+    low_power_mode = None,
+    location_engine = None,
+    moving_update_rate = None,
+    stationary_update_rate = None,
+    x_position = None,
+    y_position = None,
+    z_position = None,
+    quality = None):
+    decawave_peripheral = get_decawave_peripheral(decawave_device)
+    operation_mode_check = check_operation_mode_from_peripheral(
+        decawave_peripheral,
+        device_type_name,
+        uwb_mode_name,
+        accelerometer_enable,
+        led_enable,
+        initiator,
+        low_power_mode,
+        location_engine)
+    update_rate_check = check_update_rate_from_peripheral(
+        decawave_peripheral,
+        moving_update_rate,
+        stationary_update_rate)
+    persisted_position_check = check_persisted_position_from_peripheral(
+        decawave_peripheral,
+        x_position,
+        y_position,
+        z_position,
+        quality)
+    config_check = (operation_mode_check and update_rate_check and persisted_position_check)
+    decawave_peripheral.disconnect()
+    return config_check
+
 def write_data(
     decawave_device,
     data):
@@ -289,7 +328,7 @@ def set_operation_mode_to_peripheral(
     location_engine = None):
     operation_mode_data = get_operation_mode_data_from_peripheral(decawave_peripheral)
     if device_type_name is not None:
-        operation_mode_data['device_type_name'] = device_type_name,
+        operation_mode_data['device_type_name'] = device_type_name
         operation_mode_data['device_type'] = DEVICE_TYPE_NAMES.index(device_type_name)
     if uwb_mode_name is not None:
         operation_mode_data['uwb_mode_name'] = uwb_mode_name
@@ -307,6 +346,34 @@ def set_operation_mode_to_peripheral(
     write_operation_mode_data_to_peripheral(
         decawave_peripheral,
         operation_mode_data)
+
+def check_operation_mode_from_peripheral(
+    decawave_peripheral,
+    device_type_name = None,
+    uwb_mode_name = None,
+    accelerometer_enable = None,
+    led_enable = None,
+    initiator = None,
+    low_power_mode = None,
+    location_engine = None):
+    operation_mode_data = get_operation_mode_data_from_peripheral(decawave_peripheral)
+    if device_type_name is not None:
+        if operation_mode_data['device_type_name'] != device_type_name: return False
+        if operation_mode_data['device_type'] != DEVICE_TYPE_NAMES.index(device_type_name): return False
+    if uwb_mode_name is not None:
+        if operation_mode_data['uwb_mode_name'] != uwb_mode_name: return False
+        if operation_mode_data['uwb_mode'] != UWB_MODE_NAMES.index(uwb_mode_name): return False
+    if accelerometer_enable is not None:
+        if operation_mode_data['accelerometer_enable'] != accelerometer_enable: return False
+    if led_enable is not None:
+        if operation_mode_data['led_enable'] != led_enable: return False
+    if initiator is not None:
+        if operation_mode_data['initiator'] != initiator: return False
+    if low_power_mode is not None:
+        if operation_mode_data['low_power_mode'] != low_power_mode: return False
+    if location_engine is not None:
+        if operation_mode_data['location_engine'] != location_engine: return False
+    return True
 
 def write_operation_mode_data(decawave_device, data):
     decawave_peripheral = get_decawave_peripheral(decawave_device)
@@ -572,6 +639,17 @@ def set_update_rate_to_peripheral(
         decawave_peripheral,
         update_rate_data)
 
+def check_update_rate_from_peripheral(
+    decawave_peripheral,
+    moving_update_rate = None,
+    stationary_update_rate = None):
+    update_rate_data = get_update_rate_data_from_peripheral(decawave_peripheral)
+    if moving_update_rate is not None:
+        if update_rate_data['moving_update_rate'] != moving_update_rate: return False
+    if stationary_update_rate is not None:
+        if update_rate_data['stationary_update_rate'] != stationary_update_rate: return False
+    return True
+
 def write_update_rate_data(decawave_device, data):
     decawave_peripheral = get_decawave_peripheral(decawave_device)
     write_update_rate_data_to_peripheral(decawave_peripheral, data)
@@ -634,6 +712,30 @@ def set_persisted_position_to_peripheral(
     write_persisted_position_data_to_peripheral(
         decawave_peripheral,
         persisted_position_data)
+
+def check_persisted_position_from_peripheral(
+    decawave_peripheral,
+    x_position = None,
+    y_position = None,
+    z_position = None,
+    quality = None):
+    location_data = get_location_data_from_peripheral(decawave_peripheral)
+    persisted_position_data = location_data['position_data']
+    if persisted_position_data is None:
+        persisted_position_data = {
+            'x_position': 0,
+            'y_position': 0,
+            'z_position': 0,
+            'quality': 100}
+    if x_position is not None:
+        if persisted_position_data['x_position'] != x_position: return False
+    if y_position is not None:
+        if persisted_position_data['y_position'] != y_position: return False
+    if z_position is not None:
+        if persisted_position_data['z_position'] != z_position: return False
+    if quality is not None:
+        if persisted_position_data['quality'] != quality: return False
+    return True
 
 def write_persisted_position_data(decawave_device, data):
     decawave_peripheral = get_decawave_peripheral(decawave_device)
@@ -701,4 +803,3 @@ def write_data_multiple_devices_to_text_local(data_multiple, path):
                     file.write('    Y: {} mm\n'.format(proxy_positions_datum['y_position']))
                     file.write('    Z: {} mm\n'.format(proxy_positions_datum['z_position']))
                     file.write('    Quality: {}\n'.format(proxy_positions_datum['quality']))
-
