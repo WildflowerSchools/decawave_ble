@@ -1,6 +1,9 @@
 import bluepy.btle
 import bitstruct
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 # BLE advertising data type codes
 SHORT_LOCAL_NAME_TYPE_CODE = 8
@@ -162,7 +165,7 @@ def get_data(decawave_device):
 def get_data_multiple_devices(decawave_devices):
     data_multiple = {}
     for device_name, decawave_device in decawave_devices.items():
-        print('Getting data for {}'.format(device_name))
+        logger.info('Getting data for {}'.format(device_name))
         data = get_data(decawave_device)
         data_multiple[device_name] = data
     return data_multiple
@@ -805,7 +808,7 @@ def pack_persisted_position_bytes(persisted_position_data):
 
 # Functions for outputting data from multiple Decawave devices
 def write_data_multiple_devices_to_json_local(data_multiple, path):
-    print('\nSaving results in {}'.format(path))
+    logger.info('\nSaving results in {}'.format(path))
     with open(path, 'w') as file:
         json.dump(
             data_multiple,
@@ -814,7 +817,7 @@ def write_data_multiple_devices_to_json_local(data_multiple, path):
             indent=2)
 
 def write_data_multiple_devices_to_text_local(data_multiple, path):
-    print('Saving results in {}'.format(path))
+    logger.info('Saving results in {}'.format(path))
     with open(path, 'w') as file:
         file.write('Data for {} Decawave devices\n'.format(len(data_multiple)))
         for device_name, decawave_device in data_multiple.items():

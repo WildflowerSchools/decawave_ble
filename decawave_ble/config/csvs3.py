@@ -1,8 +1,11 @@
 import json
 import os
+import logging
 
 import pandas as pd
 import s3fs
+
+logger = logging.getLogger(__name__)
 
 from . import ConfigurationDatabase
 
@@ -21,7 +24,7 @@ class ConfigurationDatabaseCSVS3(ConfigurationDatabase):
 
     def get_configuration(self):
         s3_location = 's3://' + self.configuration_database_bucket_name + '/' + self.configuration_database_object_name
-        print('S3 location: {}'.format(s3_location))
+        logging.info('S3 location: {}'.format(s3_location))
         configuration_df = pd.read_csv(
             s3_location,
             index_col=0)
