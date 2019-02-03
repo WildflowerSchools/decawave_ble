@@ -1,9 +1,18 @@
 import bluepy.btle
 import bitstruct
+import tenacity
 import json
 import logging
 
 logger = logging.getLogger(__name__)
+
+retry_exponential_wait_multiplier = 0.1
+retry_num_attempts = 3
+# def exponential_retry():
+#     tenacity.retry(
+#         stop = tenacity.stop_after_attempt(retry_num_attempts),
+#         wait = tenacity.wait_exponential(multiplier=retry_exponential_wait_multiplier),
+#         before_sleep = tenacity.before_sleep_log(logger, logging.WARNING))
 
 # BLE advertising data type codes
 SHORT_LOCAL_NAME_TYPE_CODE = 8
@@ -111,6 +120,12 @@ def is_decawave_scan_entry(scan_entry):
     return (short_local_name is not None and short_local_name.startswith('DW'))
 
 # Function for connecting to Decawave device
+@tenacity.retry(
+    stop = tenacity.stop_after_attempt(retry_num_attempts),
+    wait = tenacity.wait_exponential(multiplier=retry_exponential_wait_multiplier),
+    before = tenacity.before_log(logger, logging.DEBUG),
+    after = tenacity.after_log(logger, logging.DEBUG),
+    before_sleep = tenacity.before_sleep_log(logger, logging.WARNING))
 def get_decawave_peripheral(decawave_device):
     decawave_peripheral = bluepy.btle.Peripheral(decawave_device.scan_entry)
     return decawave_peripheral
@@ -441,6 +456,12 @@ def get_location_data(decawave_device):
     decawave_peripheral.disconnect()
     return data
 
+@tenacity.retry(
+    stop = tenacity.stop_after_attempt(retry_num_attempts),
+    wait = tenacity.wait_exponential(multiplier=retry_exponential_wait_multiplier),
+    before = tenacity.before_log(logger, logging.DEBUG),
+    after = tenacity.after_log(logger, logging.DEBUG),
+    before_sleep = tenacity.before_sleep_log(logger, logging.WARNING))
 def get_location_data_from_peripheral(decawave_peripheral):
     bytes = read_decawave_characteristic_from_peripheral(
         decawave_peripheral,
