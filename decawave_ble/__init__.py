@@ -454,6 +454,8 @@ def parse_location_data_bytes(location_data_bytes):
         location_data_content = None
         location_data_content_name = None
     if (location_data_content == 0 or location_data_content == 2):
+        if len(location_data_bytes) < 13:
+            raise ValueError('Location data content byte indicated position data was included but less than 13 bytes follow')
         position_bytes = location_data_bytes[:13]
         location_data_bytes = location_data_bytes[13:]
         position_data = bitstruct.unpack_dict(
@@ -463,8 +465,15 @@ def parse_location_data_bytes(location_data_bytes):
     else:
         position_data = None
     if (location_data_content == 1 or location_data_content == 2):
+        if len(location_data_bytes) < 1:
+            raise ValueError('Location data content byte indicated distance data was included but no bytes follow')
         distance_count = location_data_bytes[0]
         location_data_bytes = location_data_bytes[1:]
+        if len(location_data_bytes) < 7*distance_count:
+            raise ValueError('Distance count byte indicated that {} distance values would follow so expected {} bytes but only {} bytes follow'.format(
+                distance_count,
+                7*distance_count,
+                len(location_data_bytes)))
         distance_data=[]
         for distance_data_index in range(distance_count):
             distance_datum_bytes = location_data_bytes[:7]
