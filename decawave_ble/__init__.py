@@ -6,11 +6,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-retry_exponential_wait_multiplier = 0.1
+retry_initial_wait = 0.1 # seconds
 retry_num_attempts = 3
 exponential_retry = tenacity.retry(
         stop = tenacity.stop_after_attempt(retry_num_attempts),
-        wait = tenacity.wait_exponential(multiplier=retry_exponential_wait_multiplier),
+        wait = tenacity.wait_exponential(multiplier=retry_initial_wait/2),
         before = tenacity.before_log(logger, logging.DEBUG),
         after = tenacity.after_log(logger, logging.DEBUG),
         before_sleep = tenacity.before_sleep_log(logger, logging.WARNING))
