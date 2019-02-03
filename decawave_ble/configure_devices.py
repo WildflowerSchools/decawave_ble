@@ -36,7 +36,7 @@ def configure_devices_from_database(configuration_database):
             z_position=target_data.get('z_position'),
             quality=target_data.get('quality'))
         print('Checking configuration')
-        if  decawave_ble.check_config(
+        decawave_ble.check_config(
             devices[target_device_name],
             device_type_name=target_data.get('device_type_name'),
             uwb_mode_name=target_data.get('uwb_mode_name'),
@@ -50,7 +50,5 @@ def configure_devices_from_database(configuration_database):
             x_position=target_data.get('x_position'),
             y_position=target_data.get('y_position'),
             z_position=target_data.get('z_position'),
-            quality=target_data.get('quality')):
-            print('Configuration is set correctly')
-        else:
-            raise ValueError('Configuration of {} failed'.format(devices[target_device_name]))
+            quality=target_data.get('quality'))
+        print('Configuration is set correctly')

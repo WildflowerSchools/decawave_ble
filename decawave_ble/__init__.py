@@ -240,9 +240,7 @@ def check_config(
         y_position,
         z_position,
         quality)
-    config_check = (operation_mode_check and update_rate_check and persisted_position_check)
     decawave_peripheral.disconnect()
-    return config_check
 
 def write_data(
     decawave_device,
@@ -358,22 +356,48 @@ def check_operation_mode_from_peripheral(
     location_engine = None):
     operation_mode_data = get_operation_mode_data_from_peripheral(decawave_peripheral)
     if device_type_name is not None:
-        if operation_mode_data['device_type_name'] != device_type_name: return False
-        if operation_mode_data['device_type'] != DEVICE_TYPE_NAMES.index(device_type_name): return False
+        if operation_mode_data['device_type_name'] != device_type_name:
+            raise ValueError('Device type name was set to {} but returned {}'.format(
+                device_type_name,
+                operation_mode_data['device_type_name']))
+        if operation_mode_data['device_type'] != DEVICE_TYPE_NAMES.index(device_type_name):
+            raise ValueError('Device type was set to {} but returned {}'.format(
+                DEVICE_TYPE_NAMES.index(device_type_name),
+                operation_mode_data['device_type']))
     if uwb_mode_name is not None:
-        if operation_mode_data['uwb_mode_name'] != uwb_mode_name: return False
-        if operation_mode_data['uwb_mode'] != UWB_MODE_NAMES.index(uwb_mode_name): return False
+        if operation_mode_data['uwb_mode_name'] != uwb_mode_name:
+            raise ValueError('UWB mode name was set to {} but returned {}'.format(
+                uwb_mode_name,
+                operation_mode_data['uwb_mode_name']))
+        if operation_mode_data['uwb_mode'] != UWB_MODE_NAMES.index(uwb_mode_name):
+            raise ValueError('UWB mode was set to {} but returned {}'.format(
+                UWB_MODE_NAMES.index(uwb_mode_name),
+                operation_mode_data['uwb_mode']))
     if accelerometer_enable is not None:
-        if operation_mode_data['accelerometer_enable'] != accelerometer_enable: return False
+        if operation_mode_data['accelerometer_enable'] != accelerometer_enable:
+            raise ValueError('Accelerometer enable was set to {} but returned {}'.format(
+                accelerometer_enable,
+                operation_mode_data['accelerometer_enable']))
     if led_enable is not None:
-        if operation_mode_data['led_enable'] != led_enable: return False
+        if operation_mode_data['led_enable'] != led_enable:
+            raise ValueError('LED enable was set to {} but returned {}'.format(
+                led_enable,
+                operation_mode_data['led_enable']))
     if initiator is not None:
-        if operation_mode_data['initiator'] != initiator: return False
+        if operation_mode_data['initiator'] != initiator:
+            raise ValueError('Initiator was set to {} but returned {}'.format(
+                initiator,
+                operation_mode_data['initiator']))
     if low_power_mode is not None:
-        if operation_mode_data['low_power_mode'] != low_power_mode: return False
+        if operation_mode_data['low_power_mode'] != low_power_mode:
+            raise ValueError('Low power mode was set to {} but returned {}'.format(
+                low_power_mode,
+                operation_mode_data['low_power_mode']))
     if location_engine is not None:
-        if operation_mode_data['location_engine'] != location_engine: return False
-    return True
+        if operation_mode_data['location_engine'] != location_engine:
+            raise ValueError('Location engine was set to {} but returned {}'.format(
+                location_engine,
+                operation_mode_data['location_engine']))
 
 def write_operation_mode_data(decawave_device, data):
     decawave_peripheral = get_decawave_peripheral(decawave_device)
@@ -645,10 +669,15 @@ def check_update_rate_from_peripheral(
     stationary_update_rate = None):
     update_rate_data = get_update_rate_data_from_peripheral(decawave_peripheral)
     if moving_update_rate is not None:
-        if update_rate_data['moving_update_rate'] != moving_update_rate: return False
+        if update_rate_data['moving_update_rate'] != moving_update_rate:
+            raise ValueError('Movign update rate was set to {} but returned {}'.format(
+                moving_update_rate,
+                update_rate_data['moving_update_rate']))
     if stationary_update_rate is not None:
-        if update_rate_data['stationary_update_rate'] != stationary_update_rate: return False
-    return True
+        if update_rate_data['stationary_update_rate'] != stationary_update_rate:
+            raise ValueError('Stationary update rate was set to {} but returned {}'.format(
+                stationary_update_rate,
+                update_rate_data['stationary_update_rate']))
 
 def write_update_rate_data(decawave_device, data):
     decawave_peripheral = get_decawave_peripheral(decawave_device)
@@ -728,14 +757,25 @@ def check_persisted_position_from_peripheral(
             'z_position': 0,
             'quality': 100}
     if x_position is not None:
-        if persisted_position_data['x_position'] != x_position: return False
+        if persisted_position_data['x_position'] != x_position:
+            raise ValueError('X position was set to {} but returned {}'.format(
+                x_position,
+                persisted_position_data['x_position']))
     if y_position is not None:
-        if persisted_position_data['y_position'] != y_position: return False
+        if persisted_position_data['y_position'] != y_position:
+            raise ValueError('Y position was set to {} but returned {}'.format(
+                y_position,
+                persisted_position_data['y_position']))
     if z_position is not None:
-        if persisted_position_data['z_position'] != z_position: return False
+        if persisted_position_data['z_position'] != z_position:
+            raise ValueError('Z position was set to {} but returned {}'.format(
+                z_position,
+                persisted_position_data['z_position']))
     if quality is not None:
-        if persisted_position_data['quality'] != quality: return False
-    return True
+        if persisted_position_data['quality'] != quality:
+            raise ValueError('Quality was set to {} but returned {}'.format(
+                quality,
+                persisted_position_data['quality']))
 
 def write_persisted_position_data(decawave_device, data):
     decawave_peripheral = get_decawave_peripheral(decawave_device)
