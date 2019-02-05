@@ -1,7 +1,10 @@
 import json
 import os
+import logging
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 from . import ConfigurationDatabase
 
