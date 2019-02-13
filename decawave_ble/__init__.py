@@ -6,11 +6,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-retry_exponential_wait_multiplier = 0.1
+retry_initial_wait = 0.1 # seconds
 retry_num_attempts = 3
 exponential_retry = tenacity.retry(
         stop = tenacity.stop_after_attempt(retry_num_attempts),
-        wait = tenacity.wait_exponential(multiplier=retry_exponential_wait_multiplier),
+        wait = tenacity.wait_exponential(multiplier=retry_initial_wait/2),
         before = tenacity.before_log(logger, logging.DEBUG),
         after = tenacity.after_log(logger, logging.DEBUG),
         before_sleep = tenacity.before_sleep_log(logger, logging.WARNING))
@@ -110,6 +110,7 @@ def scan_for_decawave_devices():
     return decawave_devices
 
 # Function for retrieving Decawave scan entries
+@exponential_retry
 def get_decawave_scan_entries():
     scanner = bluepy.btle.Scanner()
     scan_entries = scanner.scan()
@@ -128,6 +129,7 @@ def get_decawave_peripheral(decawave_device):
     return decawave_peripheral
 
 # Function for connecting to Decawave network node service
+@exponential_retry
 def get_decawave_network_node_service_from_peripheral(decawave_peripheral):
     decawave_network_node_service = decawave_peripheral.getServiceByUUID(NETWORK_NODE_SERVICE_UUID)
     return decawave_network_node_service
@@ -246,6 +248,7 @@ def get_operation_mode_data(decawave_device):
     decawave_peripheral.disconnect()
     return data
 
+@exponential_retry
 def get_operation_mode_data_from_peripheral(decawave_peripheral):
     bytes = read_decawave_characteristic_from_peripheral(
         decawave_peripheral,
@@ -299,6 +302,7 @@ def set_operation_mode(
         check_config_enabled)
     decawave_peripheral.disconnect()
 
+@exponential_retry
 def set_operation_mode_to_peripheral(
     decawave_peripheral,
     device_type_name = None,
@@ -399,6 +403,7 @@ def write_operation_mode_data(decawave_device, data):
     write_operation_mode_data_to_peripheral(decawave_peripheral, data)
     decawave_peripheral.disconnect()
 
+@exponential_retry
 def write_operation_mode_data_to_peripheral(decawave_peripheral, data):
     bytes = pack_operation_mode_bytes(data)
     write_decawave_characteristic_to_peripheral(
@@ -431,6 +436,7 @@ def get_location_data_mode_data(decawave_device):
     decawave_peripheral.disconnect()
     return data
 
+@exponential_retry
 def get_location_data_mode_data_from_peripheral(decawave_peripheral):
     bytes = read_decawave_characteristic_from_peripheral(
         decawave_peripheral,
@@ -514,6 +520,7 @@ def get_network_id(decawave_device):
     decawave_peripheral.disconnect()
     return data
 
+@exponential_retry
 def get_network_id_from_peripheral(decawave_peripheral):
     bytes = read_decawave_characteristic_from_peripheral(
         decawave_peripheral,
@@ -537,6 +544,7 @@ def get_proxy_positions_data(decawave_device):
     decawave_peripheral.disconnect()
     return data
 
+@exponential_retry
 def get_proxy_positions_data_from_peripheral(decawave_peripheral):
     bytes = read_decawave_characteristic_from_peripheral(
         decawave_peripheral,
@@ -568,6 +576,7 @@ def get_device_info_data(decawave_device):
     decawave_peripheral.disconnect()
     return data
 
+@exponential_retry
 def get_device_info_data_from_peripheral(decawave_peripheral):
     bytes = read_decawave_characteristic_from_peripheral(
         decawave_peripheral,
@@ -597,6 +606,7 @@ def get_anchor_list_data(decawave_device):
     decawave_peripheral.disconnect()
     return data
 
+@exponential_retry
 def get_anchor_list_data_from_peripheral(decawave_peripheral):
     bytes = read_decawave_characteristic_from_peripheral(
         decawave_peripheral,
@@ -627,6 +637,7 @@ def get_update_rate_data(decawave_device):
     decawave_peripheral.disconnect()
     return data
 
+@exponential_retry
 def get_update_rate_data_from_peripheral(decawave_peripheral):
     bytes = read_decawave_characteristic_from_peripheral(
         decawave_peripheral,
@@ -657,6 +668,7 @@ def set_update_rate(
         check_config_enabled)
     decawave_peripheral.disconnect()
 
+@exponential_retry
 def set_update_rate_to_peripheral(
     decawave_peripheral,
     moving_update_rate = None,
@@ -697,6 +709,7 @@ def write_update_rate_data(decawave_device, data):
     write_update_rate_data_to_peripheral(decawave_peripheral, data)
     decawave_peripheral.disconnect()
 
+@exponential_retry
 def write_update_rate_data_to_peripheral(decawave_peripheral, data):
     bytes = pack_update_rate_bytes(data)
     write_decawave_characteristic_to_peripheral(
@@ -731,6 +744,7 @@ def set_persisted_position(
         check_config_enabled)
     decawave_peripheral.disconnect()
 
+@exponential_retry
 def set_persisted_position_to_peripheral(
     decawave_peripheral,
     x_position = None,
@@ -805,6 +819,7 @@ def write_persisted_position_data(decawave_device, data):
     write_persisted_position_data_to_peripheral(decawave_peripheral, data)
     decawave_peripheral.disconnect()
 
+@exponential_retry
 def write_persisted_position_data_to_peripheral(decawave_peripheral, data):
     bytes = pack_persisted_position_bytes(data)
     write_decawave_characteristic_to_peripheral(
