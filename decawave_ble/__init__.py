@@ -344,6 +344,7 @@ def set_operation_mode_to_peripheral(
             low_power_mode,
             location_engine)
 
+
 def check_operation_mode_from_peripheral(
     decawave_peripheral,
     device_type_name = None,
@@ -428,6 +429,7 @@ def pack_operation_mode_bytes(operation_mode_data):
             'reserved_02'],
         operation_mode_data)
     return operation_mode_bytes
+
 
 # Functions for getting location data mode data
 def get_location_data_mode_data(decawave_device):
