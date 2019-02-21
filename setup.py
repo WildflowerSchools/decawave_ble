@@ -13,7 +13,8 @@ setup(
     install_requires=[
         'bluepy',
         'tenacity',
-        'bitstruct'
+        'bitstruct',
+        'pandas'
     ],
     extras_require={
         's3': [
