@@ -14,9 +14,14 @@ def configure_devices_from_database(configuration_database):
     device_names = list(devices.keys())
     target_devices_not_present = set(target_device_names) - set(device_names)
     if len(target_devices_not_present) > 0:
-        raise ValueError('Target devices not present: {}'.format(target_devices_not_present))
+        raise ValueError('Target devices not found: {}'.format(target_devices_not_present))
     else:
         logger.info('Found all target devices')
+    present_devices_not_targeted = set(device_names) - set(target_device_names)
+    if len(present_devices_not_targeted) > 0:
+        logger.warning('Devices found but not mentioned in config data: {}'.format(present_devices_not_targeted))
+    else:
+        logger.info('All found devices are mentioned in config data')
     for target_device_name in target_device_names:
         logger.info('Getting target data for {}'.format(target_device_name))
         target_data = configuration_database.get_target_data(target_device_name)
