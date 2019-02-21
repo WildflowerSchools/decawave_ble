@@ -838,7 +838,7 @@ def pack_persisted_position_bytes(persisted_position_data):
 
 # Functions for outputting data from multiple Decawave devices
 def write_data_multiple_devices_to_json_local(data_multiple, path):
-    logger.info('\nSaving results in {}'.format(path))
+    logger.info('Saving results in {}'.format(path))
     with open(path, 'w') as file:
         json.dump(
             data_multiple,
