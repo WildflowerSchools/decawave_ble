@@ -1,4 +1,5 @@
 
 decawave_ble\.egg-info/
-
 dist/
+config_data_local/
+.remote-sync.json
