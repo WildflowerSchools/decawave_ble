@@ -5,7 +5,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Configuration databases
-config_database_path = 'config_data/tech_room_config_database.csv'
+config_database_path = 'config_data/sample_config_database.csv'
 
 # Configure from database
 logging.info('Configuring from database')
