@@ -539,6 +539,68 @@ def parse_network_id_bytes(network_id_bytes):
     else:
         return None
 
+# Functions for writing network ID
+
+def set_network_id(
+    decawave_device,
+    network_id = None,
+    check_config_enabled = False):
+    decawave_peripheral = get_decawave_peripheral(decawave_device)
+    set_network_id_to_peripheral(
+        decawave_peripheral,
+        network_id,
+        check_config_enabled)
+    decawave_peripheral.disconnect()
+
+@exponential_retry
+def set_operation_mode_to_peripheral(
+    decawave_peripheral,
+    network_id = None,
+    check_config_enabled = False):
+    if network_id is not None:
+        write_network_id_to_peripheral(
+            decawave_peripheral,
+            network_id)
+    if check_config_enabled:
+        check_network_id_from_peripheral(
+            decawave_peripheral,
+            network_id)
+
+def check_network_id_from_peripheral(
+    decawave_peripheral,
+    network_id = None):
+    current_network_id = get_network_id_from_peripheral(decawave_peripheral)
+    if network_id is not None:
+        if current_network_id != network_id:
+            raise ValueError('Network ID was set to {} but returned {}'.format(
+                network_id,
+                current_network_id))
+
+def write_network_id(
+    decawave_device,
+    network_id):
+    decawave_peripheral = get_decawave_peripheral(decawave_device)
+    write_network_id_to_peripheral(
+        decawave_peripheral,
+        network_id)
+    decawave_peripheral.disconnect()
+
+@exponential_retry
+def write_network_id_to_peripheral(
+    decawave_peripheral,
+    network_id):
+    bytes = pack_network_id_bytes(network_id)
+    write_decawave_characteristic_to_peripheral(
+        decawave_peripheral,
+        NETWORK_ID_CHARACTERISTIC_UUID,
+        bytes)
+
+def pack_network_id_bytes(network_id):
+    network_id_bytes = bitstruct.pack(
+        'u16<',
+        network_id)
+    return network_id_bytes
+
 # Functions for getting proxy positions data
 def get_proxy_positions_data(decawave_device):
     decawave_peripheral = get_decawave_peripheral(decawave_device)
