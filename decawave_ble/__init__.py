@@ -194,6 +194,7 @@ def set_config(
     initiator = None,
     low_power_mode = None,
     location_engine = None,
+    network_id = None,
     moving_update_rate = None,
     stationary_update_rate = None,
     x_position = None,
@@ -211,6 +212,10 @@ def set_config(
         initiator,
         low_power_mode,
         location_engine,
+        check_config_enabled)
+    set_network_id_to_peripheral(
+        decawave_peripheral,
+        network_id,
         check_config_enabled)
     set_update_rate_to_peripheral(
         decawave_peripheral,
@@ -233,6 +238,9 @@ def write_data(
     write_operation_mode_data_to_peripheral(
         decawave_peripheral,
         data['operation_mode_data'])
+    write_network_id_to_peripheral(
+        decawave_peripheral,
+        data['network_id'])
     write_update_rate_data_to_peripheral(
         decawave_peripheral,
         data['update_rate_data'])
@@ -553,7 +561,7 @@ def set_network_id(
     decawave_peripheral.disconnect()
 
 @exponential_retry
-def set_operation_mode_to_peripheral(
+def set_network_id_to_peripheral(
     decawave_peripheral,
     network_id = None,
     check_config_enabled = False):
