@@ -36,6 +36,7 @@ def configure_devices_from_database(configuration_database):
             initiator=target_data.get('initiator'),
             low_power_mode=target_data.get('low_power_mode'),
             location_engine=target_data.get('location_engine'),
+            network_id=target_data.get('network_id'),
             moving_update_rate=target_data.get('moving_update_rate'),
             stationary_update_rate=target_data.get('stationary_update_rate'),
             x_position=target_data.get('x_position'),
