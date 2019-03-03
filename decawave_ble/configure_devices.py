@@ -26,6 +26,13 @@ def configure_devices_from_database(configuration_database):
         logger.info('Getting target data for {}'.format(target_device_name))
         target_data = configuration_database.get_target_data(target_device_name)
         logger.info('Target data: {}'.format(target_data))
+        network_id = None
+        if target_data.get('network_id_hex_string') is not None:
+            if target_data.get('network_id_integer') is not None:
+                raise ValueError('You can specify network_id_hex_string or network_id_integer but not both')
+            network_id = int(target_data.get('network_id_hex_string'), 16)
+        if target_data.get('network_id_integer') is not None:
+            network_id = target_data.get('network_id_integer')
         logger.info('Writing target data')
         decawave_ble.set_config(
             devices[target_device_name],
@@ -36,7 +43,7 @@ def configure_devices_from_database(configuration_database):
             initiator=target_data.get('initiator'),
             low_power_mode=target_data.get('low_power_mode'),
             location_engine=target_data.get('location_engine'),
-            network_id=target_data.get('network_id'),
+            network_id=network_id,
             moving_update_rate=target_data.get('moving_update_rate'),
             stationary_update_rate=target_data.get('stationary_update_rate'),
             x_position=target_data.get('x_position'),
