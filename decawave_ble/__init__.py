@@ -926,6 +926,10 @@ def write_data_multiple_devices_to_text_local(data_multiple, path):
             file.write('Device type: {}\n'.format(decawave_device['operation_mode_data']['device_type_name']))
             file.write('Initiator: {}\n'.format(decawave_device['operation_mode_data']['initiator']))
             file.write('UWB mode: {}\n'.format(decawave_device['operation_mode_data']['uwb_mode_name']))
+            if decawave_device['network_id'] is not None:
+                file.write('Network ID: {:02X}\n'.format(decawave_device['network_id']))
+            else:
+                file.write('Network ID: None\n')
             if decawave_device['update_rate_data'] is not None:
                 file.write('Moving update rate (ms): {}\n'.format(decawave_device['update_rate_data']['moving_update_rate']))
                 file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
