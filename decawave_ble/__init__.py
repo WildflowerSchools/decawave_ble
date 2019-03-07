@@ -194,6 +194,7 @@ def set_config(
     initiator = None,
     low_power_mode = None,
     location_engine = None,
+    network_id = None,
     moving_update_rate = None,
     stationary_update_rate = None,
     x_position = None,
@@ -211,6 +212,10 @@ def set_config(
         initiator,
         low_power_mode,
         location_engine,
+        check_config_enabled)
+    set_network_id_to_peripheral(
+        decawave_peripheral,
+        network_id,
         check_config_enabled)
     set_update_rate_to_peripheral(
         decawave_peripheral,
@@ -233,6 +238,9 @@ def write_data(
     write_operation_mode_data_to_peripheral(
         decawave_peripheral,
         data['operation_mode_data'])
+    write_network_id_to_peripheral(
+        decawave_peripheral,
+        data['network_id'])
     write_update_rate_data_to_peripheral(
         decawave_peripheral,
         data['update_rate_data'])
@@ -538,6 +546,68 @@ def parse_network_id_bytes(network_id_bytes):
         return network_id
     else:
         return None
+
+# Functions for writing network ID
+
+def set_network_id(
+    decawave_device,
+    network_id = None,
+    check_config_enabled = False):
+    decawave_peripheral = get_decawave_peripheral(decawave_device)
+    set_network_id_to_peripheral(
+        decawave_peripheral,
+        network_id,
+        check_config_enabled)
+    decawave_peripheral.disconnect()
+
+@exponential_retry
+def set_network_id_to_peripheral(
+    decawave_peripheral,
+    network_id = None,
+    check_config_enabled = False):
+    if network_id is not None:
+        write_network_id_to_peripheral(
+            decawave_peripheral,
+            network_id)
+    if check_config_enabled:
+        check_network_id_from_peripheral(
+            decawave_peripheral,
+            network_id)
+
+def check_network_id_from_peripheral(
+    decawave_peripheral,
+    network_id = None):
+    current_network_id = get_network_id_from_peripheral(decawave_peripheral)
+    if network_id is not None:
+        if current_network_id != network_id:
+            raise ValueError('Network ID was set to {} but returned {}'.format(
+                network_id,
+                current_network_id))
+
+def write_network_id(
+    decawave_device,
+    network_id):
+    decawave_peripheral = get_decawave_peripheral(decawave_device)
+    write_network_id_to_peripheral(
+        decawave_peripheral,
+        network_id)
+    decawave_peripheral.disconnect()
+
+@exponential_retry
+def write_network_id_to_peripheral(
+    decawave_peripheral,
+    network_id):
+    bytes = pack_network_id_bytes(network_id)
+    write_decawave_characteristic_to_peripheral(
+        decawave_peripheral,
+        NETWORK_ID_CHARACTERISTIC_UUID,
+        bytes)
+
+def pack_network_id_bytes(network_id):
+    network_id_bytes = bitstruct.pack(
+        'u16<',
+        network_id)
+    return network_id_bytes
 
 # Functions for getting proxy positions data
 def get_proxy_positions_data(decawave_device):
@@ -852,10 +922,14 @@ def write_data_multiple_devices_to_text_local(data_multiple, path):
         file.write('Data for {} Decawave devices\n'.format(len(data_multiple)))
         for device_name, decawave_device in data_multiple.items():
             file.write('\nDevice name: {}\n'.format(device_name))
-            file.write('Node ID: {:08X}\n'.format(decawave_device['device_info_data']['node_id']))
+            file.write('Node ID: {:016X}\n'.format(decawave_device['device_info_data']['node_id']))
             file.write('Device type: {}\n'.format(decawave_device['operation_mode_data']['device_type_name']))
             file.write('Initiator: {}\n'.format(decawave_device['operation_mode_data']['initiator']))
             file.write('UWB mode: {}\n'.format(decawave_device['operation_mode_data']['uwb_mode_name']))
+            if decawave_device['network_id'] is not None:
+                file.write('Network ID: {:04X}\n'.format(decawave_device['network_id']))
+            else:
+                file.write('Network ID: None\n')
             if decawave_device['update_rate_data'] is not None:
                 file.write('Moving update rate (ms): {}\n'.format(decawave_device['update_rate_data']['moving_update_rate']))
                 file.write('Stationary update rate (ms): {}\n'.format(decawave_device['update_rate_data']['stationary_update_rate']))
