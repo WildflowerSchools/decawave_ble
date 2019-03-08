@@ -1,5 +1,6 @@
 
 decawave_ble\.egg-info/
+build/
 dist/
 config_data_local/
 .remote-sync.json
