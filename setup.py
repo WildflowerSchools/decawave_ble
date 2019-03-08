@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='decawave_ble',
     packages=find_packages(),
-    version='0.9.5',
+    version='0.9.6',
     include_package_data=True,
     description='Python toolset for working with and configuring the Decawave DWM1000 devices',
     long_description=open('README.md').read(),
