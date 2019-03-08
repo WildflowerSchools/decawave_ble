@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='decawave_ble',
     packages=find_packages(),
-    version='0.9.6',
+    version='0.9.7',
     include_package_data=True,
     description='Python toolset for working with and configuring the Decawave DWM1000 devices',
     long_description=open('README.md').read(),
@@ -14,9 +14,12 @@ setup(
         'bluepy',
         'tenacity',
         'bitstruct',
-        'pandas'
     ],
     extras_require={
+        'csv': [
+            'pandas',
+            'numpy',
+        ],
         's3': [
             'boto3',
         ],
