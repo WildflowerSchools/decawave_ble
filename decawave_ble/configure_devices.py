@@ -3,6 +3,22 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+MINIMAL_CONFIG = {
+    'Anchor': [
+        'network_id',
+        'device_type_name',
+        'uwb_mode_name',
+        'initiator',
+        'x_position',
+        'y_position',
+        'z_position'],
+    'Tag': [
+        'network_id',
+        'device_type_name',
+        'uwb_mode_name',
+        'moving_update_rate',
+        'stationary_update_rate']}
+
 # Function for configuring multiple devices from a database
 def configure_devices_from_database(configuration_database):
     logger.info('Getting target device names')
@@ -26,6 +42,21 @@ def configure_devices_from_database(configuration_database):
         logger.info('Getting target data for {}'.format(target_device_name))
         target_data = configuration_database.get_target_data(target_device_name)
         logger.info('Target data: {}'.format(target_data))
+        device_type_name = target_data.get('device_type_name')
+        if device_type_name is None:
+            raise ValueError('Device type must be specified when configuring devices')
+        if device_type_name not in MINIMAL_CONFIG.keys():
+            raise ValueError('Device type {} not recognized'.format(device_type_name))
+        minimal_config = MINIMAL_CONFIG[device_type_name]
+        specified_fields =[]
+        for key in target_data.keys():
+            if target_data.get(key) is not None:
+                specified_fields.append(key)
+        if not set(minimal_config).issubset(specified_fields):
+            logger.warning('Device type for {} is set to {} but some important fields are not specified in config: {}'.format(
+                target_device_name,
+                device_type_name,
+                list(set(minimal_config) - set(specified_fields))))
         if target_data.get('network_id') is not None:
             try:
                 network_id = int(target_data.get('network_id'))
